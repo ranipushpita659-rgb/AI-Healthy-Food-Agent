@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A student project dashboard for personalized healthy food planning."
+    />
+    <title>AI Healthy Food Agent</title>
+    <link rel="stylesheet" href="/static/css/styles.css" />
+    <link rel="stylesheet" href="/static/css/responsive.css" />
+    <script src="/static/js/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="AI Healthy Food Agent home">
+        <span class="brand-mark" aria-hidden="true">hf</span>
+        <span>Healthy Food <strong>Agent</strong></span>
+      </a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="#overview">Overview</a>
+        <a href="#profile">Your profile</a>
+        <a href="#meal-plan">Meal plan</a>
+        <a href="#nutrition">Nutrition</a>
+        <a href="#hydration">Hydration</a>
+      </nav>
+      <span class="header-status"><span aria-hidden="true"></span> Demo mode</span>
+    </header>
+
+    <main id="main-content" class="page-shell">
+      <section id="overview" class="welcome-section" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">YOUR FOOD, YOUR GOALS</p>
+          <h1 id="page-title">A healthier day starts with a plan.</h1>
+          <p class="welcome-copy">
+            Share a few details to prepare your personalized food-planning
+            workspace.
+          </p>
+        </div>
+        <div class="date-chip">
+          <span class="date-icon" aria-hidden="true">✳</span>
+          <span>Small steps, every day</span>
+        </div>
+      </section>
+
+      <p class="demo-notice" role="note">
+        <strong>Project preview:</strong> Meal and nutrition examples are
+        placeholders, not personalized nutrition advice. Profile details are
+        validated by the backend but are not saved.
+      </p>
+
+      <section class="summary-grid" aria-label="Dashboard summary">
+        <article class="summary-card">
+          <span class="summary-icon lavender" aria-hidden="true">◎</span>
+          <div>
+            <p class="summary-label">Daily calorie estimate</p>
+            <p class="summary-value">Coming soon</p>
+            <p class="summary-detail">Calculation phase not started</p>
+          </div>
+        </article>
+        <article class="summary-card">
+          <span class="summary-icon mint" aria-hidden="true">⌂</span>
+          <div>
+            <p class="summary-label">Meal plan</p>
+            <p class="summary-value">Sample menu</p>
+            <p class="summary-detail">Illustrative demo content only</p>
+          </div>
+        </article>
+        <article class="summary-card">
+          <span class="summary-icon peach" aria-hidden="true">◌</span>
+          <div>
+            <p class="summary-label">Nutrition analysis</p>
+            <p class="summary-value">Coming soon</p>
+            <p class="summary-detail">Food dataset not added yet</p>
+          </div>
+        </article>
+      </section>
+
+      <div class="dashboard-grid">
+        <section id="profile" class="panel profile-panel" aria-labelledby="profile-title">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">GETTING STARTED</p>
+              <h2 id="profile-title">Your profile</h2>
+            </div>
+            <span class="step-badge">01</span>
+          </div>
+          <p class="panel-intro">
+            These details help shape future recommendations. This demo only
+            checks that the information is valid.
+          </p>
+
+          <form id="profile-form">
+            <div class="form-grid">
+              <label class="field">
+                <span>Age <span class="unit">(years)</span></span>
+                <input name="age" type="number" min="1" max="120" required
+                  autocomplete="off" placeholder="e.g. 25" />
+              </label>
+              <label class="field">
+                <span>Gender</span>
+                <select name="gender" required>
+                  <option value="">Select an option</option>
+                  <option value="female">Female</option>
+                  <option value="male">Male</option>
+                  <option value="other">Other</option>
+                  <option value="prefer_not_to_say">Prefer not to say</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Height <span class="unit">(cm)</span></span>
+                <input name="height_cm" type="number" min="0.1" step="0.1"
+                  required placeholder="e.g. 168" />
+              </label>
+              <label class="field">
+                <span>Weight <span class="unit">(kg)</span></span>
+                <input name="weight_kg" type="number" min="0.1" step="0.1"
+                  required placeholder="e.g. 65" />
+              </label>
+              <label class="field">
+                <span>Activity level</span>
+                <select name="activity_level" required>
+                  <option value="">Choose your usual activity</option>
+                  <option value="sedentary">Mostly sitting</option>
+                  <option value="light">Light activity</option>
+                  <option value="moderate">Moderate activity</option>
+                  <option value="active">Active</option>
+                  <option value="very_active">Very active</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Health goal</span>
+                <select name="health_goal" required>
+                  <option value="">Choose a goal</option>
+                  <option value="lose_weight">Lose weight</option>
+                  <option value="maintain_weight">Maintain weight</option>
+                  <option value="gain_weight">Gain weight</option>
+                </select>
+              </label>
+            </div>
+
+            <fieldset class="choice-group">
+              <legend>Food preferences <span class="unit">(optional)</span></legend>
+              <div class="choice-list">
+                <label class="choice"><input type="checkbox" name="food_preferences" value="vegetarian" /> Vegetarian</label>
+                <label class="choice"><input type="checkbox" name="food_preferences" value="vegan" /> Vegan</label>
+                <label class="choice"><input type="checkbox" name="food_preferences" value="halal" /> Halal</label>
+              </div>
+            </fieldset>
+
+            <label class="field">
+              <span>Foods to exclude <span class="unit">(optional, comma-separated)</span></span>
+              <input name="excluded_foods" type="text"
+                placeholder="e.g. peanuts, shellfish" />
+            </label>
+
+            <div class="form-actions">
+              <button id="submit-profile" class="button button-primary" type="submit">
+                Validate profile <span aria-hidden="true">→</span>
+              </button>
+              <span id="profile-status" class="form-status" role="status" aria-live="polite"></span>
+            </div>
+          </form>
+        </section>
+
+        <section id="meal-plan" class="panel meal-panel" aria-labelledby="meal-title">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">A LITTLE INSPIRATION</p>
+              <h2 id="meal-title">Sample meal ideas</h2>
+            </div>
+            <span class="step-badge">02</span>
+          </div>
+          <p class="panel-intro">Example meal slots for the future planner.</p>
+          <div class="meal-list">
+            <article class="meal-item">
+              <span class="meal-icon breakfast" aria-hidden="true">☀</span>
+              <div><p class="meal-type">BREAKFAST</p><h3>Sample breakfast</h3><p>Personalized food data will appear here.</p></div>
+            </article>
+            <article class="meal-item">
+              <span class="meal-icon lunch" aria-hidden="true">◒</span>
+              <div><p class="meal-type">LUNCH</p><h3>Sample lunch</h3><p>Recommendations will respect your preferences.</p></div>
+            </article>
+            <article class="meal-item">
+              <span class="meal-icon dinner" aria-hidden="true">☾</span>
+              <div><p class="meal-type">DINNER</p><h3>Sample dinner</h3><p>Excluded foods will be filtered out.</p></div>
+            </article>
+            <article class="meal-item">
+              <span class="meal-icon snack" aria-hidden="true">✿</span>
+              <div><p class="meal-type">SNACK</p><h3>Sample snack</h3><p>Meal options will be based on structured data.</p></div>
+            </article>
+          </div>
+          <p class="placeholder-note">Meal recommendations are not available in this phase.</p>
+        </section>
+
+        <section id="nutrition" class="panel nutrition-panel" aria-labelledby="nutrition-title">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">UNDERSTAND YOUR FOOD</p>
+              <h2 id="nutrition-title">Nutrition analysis</h2>
+            </div>
+            <span class="step-badge">03</span>
+          </div>
+          <div class="empty-state">
+            <span class="empty-icon" aria-hidden="true">⌕</span>
+            <h3>Nutrition insights are on the way</h3>
+            <p>Later, the system will calculate calories, protein, carbohydrates, fat and fibre from structured food data.</p>
+          </div>
+        </section>
+
+        <section id="hydration" class="panel hydration-panel" aria-labelledby="hydration-title">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">A GENTLE NUDGE</p>
+              <h2 id="hydration-title">Water reminder</h2>
+            </div>
+            <span class="step-badge">04</span>
+          </div>
+          <p class="panel-intro">A simple demo counter, not a medical hydration target.</p>
+          <div class="water-count">
+            <span id="water-count" class="water-number">0</span>
+            <span class="water-unit">glasses logged in this demo</span>
+          </div>
+          <div class="water-track" aria-hidden="true"><span id="water-progress"></span></div>
+          <button id="water-button" class="button button-secondary" type="button">
+            <span aria-hidden="true">＋</span> Log a glass
+          </button>
+          <p id="water-status" class="water-status" role="status" aria-live="polite"></p>
+        </section>
+      </div>
+      <footer class="page-footer">
+        For general education only. This student project does not provide medical advice.
+        For personal health needs, consult a qualified health professional.
+      </footer>
+    </main>
+  </body>
+</html>
