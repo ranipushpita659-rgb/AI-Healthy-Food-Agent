@@ -1,17 +1,43 @@
 """Schemas for meal-plan API requests and responses."""
 
+from enum import StrEnum
+
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.schemas.nutrition import NutritionTotals
 from app.schemas.profile import ProfileRequest
 
 
+class AvailableFood(StrEnum):
+    """Available food groups selectable for a meal plan."""
+
+    RICE = "rice"
+    BREAD = "bread"
+    OATS = "oats"
+    EGG = "egg"
+    CHICKEN = "chicken"
+    FISH = "fish"
+    POTATO = "potato"
+    TOMATO = "tomato"
+    CARROT = "carrot"
+    SPINACH = "spinach"
+    MILK = "milk"
+    YOGURT = "yogurt"
+    BANANA = "banana"
+    APPLE = "apple"
+    ORANGE = "orange"
+    LENTILS = "lentils"
+    BEANS = "beans"
+    NUTS = "nuts"
+
+
 class MealPlanRequest(BaseModel):
-    """Profile and constraints for a future meal-plan request."""
+    """Profile and food constraints for a meal-plan request."""
 
     model_config = ConfigDict(extra="forbid")
 
     profile: ProfileRequest
+    available_foods: list[AvailableFood] = Field(default_factory=list)
     daily_calorie_target: float | None = Field(default=None, ge=500, le=10000)
 
     @model_validator(mode="after")
@@ -49,3 +75,5 @@ class MealPlanResponse(BaseModel):
     daily_calorie_target_kcal: float = Field(gt=0)
     goal: str
     notice: str
+    profile_id: str | None = None
+    meal_plan_id: str | None = None

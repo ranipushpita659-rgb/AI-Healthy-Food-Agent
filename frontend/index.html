@@ -8,9 +8,11 @@
       content="A student project dashboard for personalized healthy food planning."
     />
     <title>AI Healthy Food Agent</title>
-    <link rel="stylesheet" href="/static/css/styles.css" />
+    <link rel="stylesheet" href="/static/css/styles.css?v=phase13" />
     <link rel="stylesheet" href="/static/css/responsive.css" />
-    <script src="/static/js/app.js" defer></script>
+    <script src="/static/js/api.js?v=phase10" defer></script>
+    <script src="/static/js/water-reminder.js?v=phase10" defer></script>
+    <script src="/static/js/app.js?v=phase13" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -46,9 +48,9 @@
       </section>
 
       <p class="demo-notice" role="note">
-        <strong>Project preview:</strong> Meal and nutrition examples are
-        placeholders, not personalized nutrition advice. Profile details are
-        validated by the backend but are not saved.
+        <strong>Educational demo:</strong> Create a meal plan from the available
+        food dataset. Estimates are not medical advice; submitted profiles and
+        plans are saved in the local database.
       </p>
 
       <section class="summary-grid" aria-label="Dashboard summary">
@@ -56,24 +58,24 @@
           <span class="summary-icon lavender" aria-hidden="true">◎</span>
           <div>
             <p class="summary-label">Daily calorie estimate</p>
-            <p class="summary-value">Coming soon</p>
-            <p class="summary-detail">Calculation phase not started</p>
+            <p id="calorie-summary" class="summary-value">Not calculated</p>
+            <p id="calorie-detail" class="summary-detail">Submit your profile to calculate</p>
           </div>
         </article>
         <article class="summary-card">
           <span class="summary-icon mint" aria-hidden="true">⌂</span>
           <div>
-            <p class="summary-label">Meal plan</p>
-            <p class="summary-value">Sample menu</p>
-            <p class="summary-detail">Illustrative demo content only</p>
+            <p class="summary-label">Planned calories</p>
+            <p id="plan-calorie-summary" class="summary-value">Not calculated</p>
+            <p id="plan-calorie-detail" class="summary-detail">Generated meal plan</p>
           </div>
         </article>
         <article class="summary-card">
           <span class="summary-icon peach" aria-hidden="true">◌</span>
           <div>
             <p class="summary-label">Nutrition analysis</p>
-            <p class="summary-value">Coming soon</p>
-            <p class="summary-detail">Food dataset not added yet</p>
+            <p id="nutrition-summary" class="summary-value">Not calculated</p>
+            <p id="nutrition-detail" class="summary-detail">Macros from selected foods</p>
           </div>
         </article>
       </section>
@@ -88,8 +90,8 @@
             <span class="step-badge">01</span>
           </div>
           <p class="panel-intro">
-            These details help shape future recommendations. This demo only
-            checks that the information is valid.
+            Your profile is validated and saved with the generated meal plan.
+            Only adults can use the current calorie and meal-plan estimates.
           </p>
 
           <form id="profile-form">
@@ -141,6 +143,63 @@
               </label>
             </div>
 
+            <fieldset class="available-foods" aria-describedby="available-food-help">
+              <legend>Available Food Items</legend>
+              <p id="available-food-help" class="available-food-help">
+                Select ingredients you have at home. Selected items constrain the plan; if none are selected, the full catalog can be used. The demo catalog has limited coverage.
+              </p>
+              <div class="available-food-groups">
+                <div class="available-food-category" role="group" aria-labelledby="available-grains">
+                  <h3 id="available-grains">Grains</h3>
+                  <div class="available-food-options">
+                    <label class="available-food-option"><input type="checkbox" name="available_foods" value="rice" /> Rice</label>
+                    <label class="available-food-option"><input type="checkbox" name="available_foods" value="bread" /> Bread</label>
+                    <label class="available-food-option"><input type="checkbox" name="available_foods" value="oats" /> Oats</label>
+                  </div>
+                </div>
+                <div class="available-food-category" role="group" aria-labelledby="available-protein">
+                  <h3 id="available-protein">Protein</h3>
+                  <div class="available-food-options">
+                    <label class="available-food-option"><input type="checkbox" name="available_foods" value="egg" /> Egg</label>
+                    <label class="available-food-option"><input type="checkbox" name="available_foods" value="chicken" /> Chicken</label>
+                    <label class="available-food-option"><input type="checkbox" name="available_foods" value="fish" /> Fish</label>
+                  </div>
+                </div>
+                <div class="available-food-category" role="group" aria-labelledby="available-vegetables">
+                  <h3 id="available-vegetables">Vegetables</h3>
+                  <div class="available-food-options">
+                    <label class="available-food-option"><input type="checkbox" name="available_foods" value="potato" /> Potato</label>
+                    <label class="available-food-option"><input type="checkbox" name="available_foods" value="tomato" /> Tomato</label>
+                    <label class="available-food-option"><input type="checkbox" name="available_foods" value="carrot" /> Carrot</label>
+                    <label class="available-food-option"><input type="checkbox" name="available_foods" value="spinach" /> Spinach</label>
+                  </div>
+                </div>
+                <div class="available-food-category" role="group" aria-labelledby="available-dairy">
+                  <h3 id="available-dairy">Dairy</h3>
+                  <div class="available-food-options">
+                    <label class="available-food-option"><input type="checkbox" name="available_foods" value="milk" /> Milk</label>
+                    <label class="available-food-option"><input type="checkbox" name="available_foods" value="yogurt" /> Yogurt</label>
+                  </div>
+                </div>
+                <div class="available-food-category" role="group" aria-labelledby="available-fruits">
+                  <h3 id="available-fruits">Fruits</h3>
+                  <div class="available-food-options">
+                    <label class="available-food-option"><input type="checkbox" name="available_foods" value="banana" /> Banana</label>
+                    <label class="available-food-option"><input type="checkbox" name="available_foods" value="apple" /> Apple</label>
+                    <label class="available-food-option"><input type="checkbox" name="available_foods" value="orange" /> Orange</label>
+                  </div>
+                </div>
+                <div class="available-food-category" role="group" aria-labelledby="available-pulses">
+                  <h3 id="available-pulses">Pulses &amp; Nuts</h3>
+                  <div class="available-food-options">
+                    <label class="available-food-option"><input type="checkbox" name="available_foods" value="lentils" /> Lentils</label>
+                    <label class="available-food-option"><input type="checkbox" name="available_foods" value="beans" /> Beans</label>
+                    <label class="available-food-option"><input type="checkbox" name="available_foods" value="nuts" /> Nuts</label>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+
             <fieldset class="choice-group">
               <legend>Food preferences <span class="unit">(optional)</span></legend>
               <div class="choice-list">
@@ -158,7 +217,7 @@
 
             <div class="form-actions">
               <button id="submit-profile" class="button button-primary" type="submit">
-                Validate profile <span aria-hidden="true">→</span>
+                Generate meal plan <span aria-hidden="true">→</span>
               </button>
               <span id="profile-status" class="form-status" role="status" aria-live="polite"></span>
             </div>
@@ -169,30 +228,27 @@
           <div class="panel-heading">
             <div>
               <p class="eyebrow">A LITTLE INSPIRATION</p>
-              <h2 id="meal-title">Sample meal ideas</h2>
+              <h2 id="meal-title">Your meal plan</h2>
             </div>
             <span class="step-badge">02</span>
           </div>
-          <p class="panel-intro">Example meal slots for the future planner.</p>
-          <div class="meal-list">
-            <article class="meal-item">
-              <span class="meal-icon breakfast" aria-hidden="true">☀</span>
-              <div><p class="meal-type">BREAKFAST</p><h3>Sample breakfast</h3><p>Personalized food data will appear here.</p></div>
-            </article>
-            <article class="meal-item">
-              <span class="meal-icon lunch" aria-hidden="true">◒</span>
-              <div><p class="meal-type">LUNCH</p><h3>Sample lunch</h3><p>Recommendations will respect your preferences.</p></div>
-            </article>
-            <article class="meal-item">
-              <span class="meal-icon dinner" aria-hidden="true">☾</span>
-              <div><p class="meal-type">DINNER</p><h3>Sample dinner</h3><p>Excluded foods will be filtered out.</p></div>
-            </article>
-            <article class="meal-item">
-              <span class="meal-icon snack" aria-hidden="true">✿</span>
-              <div><p class="meal-type">SNACK</p><h3>Sample snack</h3><p>Meal options will be based on structured data.</p></div>
-            </article>
+          <p class="panel-intro">
+            Breakfast, lunch, dinner, and snack choices from eligible dataset foods.
+          </p>
+          <p id="agent-summary" class="agent-summary" aria-live="polite"></p>
+          <div id="meal-list" class="meal-list" aria-live="polite">
+            <div class="empty-state">
+              <span class="empty-icon" aria-hidden="true">⌂</span>
+              <h3>Your plan will appear here</h3>
+              <p>Complete your profile and generate a plan to see food choices and nutrition totals.</p>
+            </div>
           </div>
-          <p class="placeholder-note">Meal recommendations are not available in this phase.</p>
+          <p id="meal-status" class="form-status" role="status" aria-live="polite"></p>
+          <p id="meal-safety" class="meal-safety" role="note" hidden></p>
+          <details id="plan-assumptions" class="plan-assumptions" hidden>
+            <summary>Calculation assumptions</summary>
+            <ul id="assumption-list"></ul>
+          </details>
         </section>
 
         <section id="nutrition" class="panel nutrition-panel" aria-labelledby="nutrition-title">
@@ -203,10 +259,10 @@
             </div>
             <span class="step-badge">03</span>
           </div>
-          <div class="empty-state">
+          <div id="nutrition-content" class="empty-state">
             <span class="empty-icon" aria-hidden="true">⌕</span>
-            <h3>Nutrition insights are on the way</h3>
-            <p>Later, the system will calculate calories, protein, carbohydrates, fat and fibre from structured food data.</p>
+            <h3>Nutrition totals will appear here</h3>
+            <p>Generate a meal plan to see calories, protein, carbohydrates, fat, and fibre.</p>
           </div>
         </section>
 
@@ -218,16 +274,44 @@
             </div>
             <span class="step-badge">04</span>
           </div>
-          <p class="panel-intro">A simple demo counter, not a medical hydration target.</p>
+          <p class="panel-intro">A session-only counter and optional on-page reminder, not a hydration target.</p>
           <div class="water-count">
             <span id="water-count" class="water-number">0</span>
             <span class="water-unit">glasses logged in this demo</span>
           </div>
-          <div class="water-track" aria-hidden="true"><span id="water-progress"></span></div>
-          <button id="water-button" class="button button-secondary" type="button">
-            <span aria-hidden="true">＋</span> Log a glass
-          </button>
+          <div
+            id="water-progress"
+            class="water-track"
+            role="progressbar"
+            aria-label="Demo water log progress"
+            aria-valuemin="0"
+            aria-valuemax="8"
+            aria-valuenow="0"
+          ><span></span></div>
+          <div class="water-controls">
+            <label class="field" for="water-reminder-interval">
+              Remind me every
+              <select id="water-reminder-interval">
+                <option value="1">1 minute (quick demo)</option>
+                <option value="15">15 minutes</option>
+                <option value="30" selected>30 minutes</option>
+              </select>
+            </label>
+            <div class="form-actions">
+              <button id="water-reminder-toggle" class="button button-secondary" type="button">
+                Start reminder
+              </button>
+              <button id="water-button" class="button button-secondary" type="button">
+                <span aria-hidden="true">＋</span> Log a glass
+              </button>
+            </div>
+          </div>
           <p id="water-status" class="water-status" role="status" aria-live="polite"></p>
+          <p id="water-reminder-status" class="water-status" role="status" aria-live="polite"></p>
+          <p class="water-limit">
+            Reminders run only while this page is open. Inactive tabs may delay them;
+            the reminder and counter reset when you reload or close the page.
+          </p>
         </section>
       </div>
       <footer class="page-footer">

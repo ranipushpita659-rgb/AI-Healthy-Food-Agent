@@ -95,6 +95,10 @@
     gap: 0;
   }
 
+  .available-food-groups {
+    grid-template-columns: 1fr;
+  }
+
   .demo-notice {
     font-size: 11px;
   }

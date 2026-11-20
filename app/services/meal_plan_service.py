@@ -1,10 +1,12 @@
 """Deterministic meal planning with hard preference and exclusion filters."""
 
+import re
 from collections.abc import Sequence
 
 from app.data.food_repository import load_foods
 from app.schemas.food import FoodItem
 from app.schemas.meals import (
+    AvailableFood,
     MealPlanItem,
     MealPlanRequest,
     MealPlanResponse,
@@ -21,6 +23,36 @@ MEAL_CALORIE_SHARES = {
     "lunch": 0.35,
     "dinner": 0.30,
     "snack": 0.10,
+}
+AVAILABLE_FOOD_TERMS = {
+    AvailableFood.RICE: {"rice"},
+    AvailableFood.BREAD: {"bread"},
+    AvailableFood.OATS: {"oat", "oats"},
+    AvailableFood.EGG: {"egg", "eggs"},
+    AvailableFood.CHICKEN: {"chicken"},
+    AvailableFood.FISH: {"fish"},
+    AvailableFood.POTATO: {"potato", "potatoes"},
+    AvailableFood.TOMATO: {"tomato", "tomatoes"},
+    AvailableFood.CARROT: {"carrot", "carrots"},
+    AvailableFood.SPINACH: {"spinach"},
+    AvailableFood.MILK: {"milk"},
+    AvailableFood.YOGURT: {"yogurt", "yoghurt"},
+    AvailableFood.BANANA: {"banana", "bananas"},
+    AvailableFood.APPLE: {"apple", "apples"},
+    AvailableFood.ORANGE: {"orange", "oranges"},
+    AvailableFood.LENTILS: {"lentil", "lentils"},
+    AvailableFood.BEANS: {"bean", "beans"},
+    AvailableFood.NUTS: {
+        "almond",
+        "cashew",
+        "hazelnut",
+        "nut",
+        "nuts",
+        "peanut",
+        "pecan",
+        "pistachio",
+        "walnut",
+    },
 }
 
 
@@ -53,9 +85,24 @@ def _food_is_excluded(food: FoodItem, exclusions: set[str]) -> bool:
     )
 
 
+def _food_matches_availability(
+    food: FoodItem,
+    available_foods: set[AvailableFood],
+) -> bool:
+    if not available_foods:
+        return True
+
+    name_words = set(re.findall(r"[a-z0-9]+", food.name.casefold()))
+    return any(
+        name_words.intersection(AVAILABLE_FOOD_TERMS[item])
+        for item in available_foods
+    )
+
+
 def _eligible_foods(
     foods: Sequence[FoodItem],
     profile: ProfileRequest,
+    available_foods: set[AvailableFood],
 ) -> list[FoodItem]:
     preferences = {preference.casefold() for preference in profile.food_preferences}
     exclusions = {exclusion.casefold() for exclusion in profile.excluded_foods}
@@ -64,6 +111,7 @@ def _eligible_foods(
         food
         for food in foods
         if _food_matches_preferences(food, preferences)
+        and _food_matches_availability(food, available_foods)
         and not _food_is_excluded(food, exclusions)
     ]
 
@@ -145,13 +193,17 @@ def generate_meal_plan(
 ) -> MealPlanResponse:
     """Generate four deterministic meal slots from permitted dataset foods.
 
-    User exclusions and all selected food-preference tags are applied before
-    meal-slot selection. No plan is returned if any of the four slots has no
-    eligible candidate.
+    User availability, preference, and exclusion filters are applied before
+    meal-slot selection. An empty availability selection keeps the full
+    catalog eligible. No plan is returned if any slot has no eligible food.
     """
     catalog = list(foods) if foods is not None else load_foods()
     profile = request.profile
-    eligible_foods = _eligible_foods(catalog, profile)
+    eligible_foods = _eligible_foods(
+        catalog,
+        profile,
+        set(request.available_foods),
+    )
 
     candidates_by_slot = {
         slot: [
