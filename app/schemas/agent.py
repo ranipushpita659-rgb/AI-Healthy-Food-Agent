@@ -4,37 +4,32 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.schemas.profile import ProfileRequest
+from app.schemas.meals import MealPlanRequest, MealPlanResponse
+from app.schemas.nutrition import CalorieResponse
 
 
-class AgentCandidateFood(BaseModel):
-    """Structured food record that may be supplied to a future LLM request."""
+class AgentRecommendationRequest(MealPlanRequest):
+    """Validated profile and optional calorie target for a recommendation."""
+
+
+class AgentFoodReason(BaseModel):
+    """A short explanation tied to one food selected by the planner."""
 
     model_config = ConfigDict(extra="forbid")
 
     food_id: str = Field(min_length=1)
-    name: str = Field(min_length=1)
-    category: str = Field(min_length=1)
-    calories_kcal: float = Field(ge=0)
-    protein_g: float = Field(ge=0)
-    carbohydrates_g: float = Field(ge=0)
-    fat_g: float = Field(ge=0)
-    fibre_g: float = Field(ge=0)
-
-
-class AgentRecommendationRequest(BaseModel):
-    """Validated context for a future recommendation explanation."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    profile: ProfileRequest
-    calorie_target_kcal: float | None = Field(default=None, gt=0)
-    candidate_foods: list[AgentCandidateFood] = Field(default_factory=list)
+    reason: str = Field(min_length=1, max_length=500)
 
 
 class AgentRecommendationResponse(BaseModel):
-    """Natural-language explanation linked to supplied candidate food IDs."""
+    """Plan, calculations, grounded explanations, and provider status."""
 
-    explanation: str
-    food_ids: list[str]
+    summary: str
+    meal_plan: MealPlanResponse
+    bmi: float = Field(gt=0)
+    calorie_estimate: CalorieResponse
+    reasons: list[AgentFoodReason]
+    assumptions: list[str]
+    safety_note: str
     source: Literal["llm", "deterministic"]
+    message: str | None = None

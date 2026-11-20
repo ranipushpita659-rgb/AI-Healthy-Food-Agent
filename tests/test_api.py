@@ -10,12 +10,13 @@ from app.main import app
 def request(method: str, url: str, payload: dict[str, object] | None = None) -> httpx.Response:
     """Make an in-process request without the deprecated Starlette test client."""
     async def send_request() -> httpx.Response:
-        transport = httpx.ASGITransport(app=app)
-        async with httpx.AsyncClient(
-            transport=transport,
-            base_url="http://testserver",
-        ) as client:
-            return await client.request(method, url, json=payload)
+        async with app.router.lifespan_context(app):
+            transport = httpx.ASGITransport(app=app)
+            async with httpx.AsyncClient(
+                transport=transport,
+                base_url="http://testserver",
+            ) as client:
+                return await client.request(method, url, json=payload)
 
     return asyncio.run(send_request())
 
@@ -71,6 +72,24 @@ def test_calorie_endpoint_rejects_minor_profile() -> None:
 
     assert response.status_code == 422
     assert "adults age 18 and older" in response.text
+
+
+def test_profile_validation_rejects_missing_required_fields() -> None:
+    response = request(
+        "POST",
+        "/api/profile/validate",
+        {
+            "age": 30,
+            "height_cm": 175,
+            "weight_kg": 70,
+            "activity_level": "moderate",
+            "health_goal": "maintain_weight",
+        },
+    )
+
+    assert response.status_code == 422
+    assert "gender" in response.text
+    assert "Traceback" not in response.text
 
 
 def test_food_endpoint_lists_and_filters_foods() -> None:
@@ -142,6 +161,8 @@ def test_meal_plan_endpoint_respects_excluded_foods() -> None:
 
     assert response.status_code == 200
     assert len(response.json()["meals"]) == 4
+    assert response.json()["profile_id"]
+    assert response.json()["meal_plan_id"]
     recommended_ids = {
         item["food_id"]
         for meal in response.json()["meals"]

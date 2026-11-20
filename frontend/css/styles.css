@@ -406,6 +406,61 @@ h1 {
   accent-color: var(--green);
 }
 
+.available-foods {
+  margin: 0 0 18px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.available-foods legend {
+  padding: 0 5px;
+  color: #405047;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.available-food-help {
+  margin: 0 0 13px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.available-food-groups {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.available-food-category h3 {
+  margin: 0 0 7px;
+  color: #56645a;
+  font-size: 11px;
+}
+
+.available-food-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.available-food-option {
+  display: inline-flex;
+  min-height: 31px;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px;
+  border: 1px solid #e4e9e4;
+  border-radius: 999px;
+  color: #56645a;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.available-food-option input {
+  accent-color: var(--green);
+}
+
 .form-actions {
   display: flex;
   min-height: 44px;
@@ -477,6 +532,13 @@ h1 {
   color: #a53d35;
 }
 
+.agent-summary {
+  margin: 14px 0 4px;
+  color: #405047;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .meal-list {
   display: grid;
   gap: 2px;
@@ -537,16 +599,61 @@ h1 {
   font-size: 13px;
 }
 
-.meal-item p:last-child {
+.meal-content {
+  min-width: 0;
+}
+
+.meal-item .meal-serving,
+.meal-item .meal-reason,
+.meal-item .meal-nutrition {
   margin: 0;
   color: var(--muted);
   font-size: 11px;
+}
+
+.meal-item .meal-reason {
+  margin-top: 5px;
+  color: #53665a;
+}
+
+.meal-item .meal-nutrition {
+  margin-top: 8px;
+  color: var(--green-dark);
+  font-weight: 600;
 }
 
 .placeholder-note {
   margin: 10px 0 0;
   color: #939c95;
   font-size: 10px;
+}
+
+.meal-safety {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: #fffaf0;
+  color: #71592f;
+  font-size: 10px;
+}
+
+.plan-assumptions {
+  margin-top: 12px;
+  color: #65726a;
+  font-size: 11px;
+}
+
+.plan-assumptions summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.plan-assumptions ul {
+  padding-left: 18px;
+}
+
+.plan-assumptions li + li {
+  margin-top: 5px;
 }
 
 .empty-state {
@@ -580,6 +687,37 @@ h1 {
   margin: 0;
   color: var(--muted);
   font-size: 11px;
+}
+
+.nutrition-content {
+  padding-top: 18px;
+}
+
+.nutrition-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.nutrition-metric {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fbfcfa;
+}
+
+.nutrition-metric dt {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.nutrition-metric dd {
+  margin: 4px 0 0;
+  color: var(--ink);
+  font-family: "Manrope", "Segoe UI", sans-serif;
+  font-size: 15px;
+  font-weight: 700;
 }
 
 .water-count {
@@ -622,6 +760,17 @@ h1 {
 .water-status {
   min-height: 18px;
   margin-top: 10px;
+}
+
+.water-controls {
+  display: grid;
+  gap: 4px;
+}
+
+.water-limit {
+  margin: 8px 0 0;
+  color: #89938c;
+  font-size: 10px;
 }
 
 .page-footer {
