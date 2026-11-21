@@ -157,8 +157,14 @@ intentionally non-destructive and does not remove application tables or records.
 - BMI and Mifflin-St Jeor calorie values are estimates for adults, not diagnosis,
   treatment, or an individualized prescription. They are not intended for
   people under 18, pregnant, or breastfeeding.
-- Recommendations depend on the small structured dataset. Verify ingredients
-  and allergen information; dataset gaps can make a requested plan unavailable.
+- Food nutrition values are per 100 g and link to USDA FoodData Central records.
+  Dietary tags are dataset classifications; verify product ingredients and
+  allergen information. The catalog is not a substitute for product labels.
+- The added records use USDA FoodData Central SR Legacy (April 2018) values
+  from the [official download archive](https://fdc.nal.usda.gov/download-datasets/).
+- Halal filtering accepts ingredient-permissible items and explicitly verified
+  items. Meat without a verified Halal source is marked unknown and excluded
+  when the Halal preference is selected.
 - The LLM is limited to explaining foods already selected by the deterministic
   planner. It does not calculate authoritative nutrition values.
 - The reminder is an in-page timer and is not a background notification or

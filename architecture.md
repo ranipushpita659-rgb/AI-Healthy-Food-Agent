@@ -21,7 +21,7 @@ The browser is served by FastAPI at `/`; CSS and JavaScript are served from
 - `app/services/` owns deterministic calculations, meal selection, and the
   optional LLM explanation.
 - `app/data/food_repository.py` loads and validates the versioned JSON food
-  catalog.
+  catalog, including per-record USDA provenance and Halal status.
 - `app/data/database_repository.py` owns persistence operations.
 - `app/db/` defines SQLAlchemy models, the engine/session, and startup schema
   creation.

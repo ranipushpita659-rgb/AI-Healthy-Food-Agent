@@ -11,8 +11,8 @@ The tests cover:
 | Area | Coverage |
 | --- | --- |
 | BMI and calorie estimates | Known values, formula assumptions, invalid measurements, and adult-only boundaries. |
-| Food dataset and nutrition | Valid/invalid JSON, duplicate IDs, unknown foods, serving totals, and exact filters. |
-| Meal planning | Four meal slots, calorie target fallback, preferences/exclusions, missing matches, and an empty catalog. |
+| Food dataset and nutrition | Valid/invalid JSON, duplicate IDs, USDA provenance, complete nutrient values, all UI options mapped, serving totals, and exact filters. |
+| Meal planning | Four meal slots with non-rice ingredients, calorie target fallback, vegetarian/vegan/Halal filters, allergies/exclusions, missing matches, and an empty catalog. |
 | API validation | Health endpoint, missing/invalid profile fields, calculations, foods, nutrition, and meal-plan errors. |
 | Persistence | Profile/plan/weight writes, history, and records surviving a new SQLAlchemy session. |
 | Agent integration | Missing credentials, Gemini/OpenAI provider failures, provider timeout, invalid/unselected food IDs, valid constrained explanation, and persisted API result. |
