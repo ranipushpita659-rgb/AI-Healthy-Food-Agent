@@ -6,6 +6,13 @@ import logging
 import httpx
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
+try:
+    from google import genai
+    from google.genai import types
+except ImportError:
+    genai = None
+    types = None
+
 from app.core.config import settings
 from app.data.food_repository import load_foods
 from app.schemas.agent import (
@@ -122,29 +129,82 @@ def _request_explanation(context: dict[str, object]) -> _LLMExplanation:
     if not settings.llm_api_key or not settings.llm_model:
         raise ValueError("LLM credentials or model are not configured.")
 
-    response = httpx.post(
-        f"{settings.llm_base_url.rstrip('/')}/chat/completions",
-        headers={"Authorization": f"Bearer {settings.llm_api_key}"},
-        json={
-            "model": settings.llm_model,
-            "temperature": 0,
-            "response_format": {"type": "json_object"},
-            "messages": [
-                {"role": "system", "content": SYSTEM_INSTRUCTION},
-                {
-                    "role": "user",
-                    "content": json.dumps(context, separators=(",", ":")),
-                },
-            ],
-        },
-        timeout=settings.llm_timeout_seconds,
+    provider = settings.llm_provider.strip().lower()
+    prompt = (
+        f"{SYSTEM_INSTRUCTION}\n\n"
+        f"Actual recommendation context:\n"
+        f"{json.dumps(context, separators=(',', ':'))}"
     )
-    response.raise_for_status()
-    response_data = response.json()
-    content = response_data["choices"][0]["message"]["content"]
+
+    if provider == "gemini":
+        if genai is None or types is None:
+            raise RuntimeError("The Google Gen AI SDK is not installed.")
+        client = genai.Client(api_key=settings.llm_api_key)
+        response = client.models.generate_content(
+            model=settings.llm_model,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                temperature=0,
+                response_mime_type="application/json",
+                response_schema=_LLMExplanation,
+                http_options=types.HttpOptions(
+                    timeout=int(settings.llm_timeout_seconds * 1000),
+                ),
+            ),
+        )
+        content = getattr(response, "text", None)
+    elif provider == "openai":
+        response = httpx.post(
+            f"{settings.llm_base_url.rstrip('/')}/chat/completions",
+            headers={"Authorization": f"Bearer {settings.llm_api_key}"},
+            json={
+                "model": settings.llm_model,
+                "temperature": 0,
+                "response_format": {"type": "json_object"},
+                "messages": [
+                    {"role": "system", "content": SYSTEM_INSTRUCTION},
+                    {
+                        "role": "user",
+                        "content": json.dumps(context, separators=(",", ":")),
+                    },
+                ],
+            },
+            timeout=settings.llm_timeout_seconds,
+        )
+        response.raise_for_status()
+        response_data = response.json()
+        content = response_data["choices"][0]["message"]["content"]
+    else:
+        raise ValueError(
+            f"Unsupported LLM provider: {provider}. Use 'gemini' or 'openai'."
+        )
+
     if not isinstance(content, str):
         raise ValueError("The LLM returned a non-text response.")
     return _LLMExplanation.model_validate(json.loads(content))
+
+
+def _llm_error_category(error: Exception) -> str:
+    message = str(error).lower()
+    status = getattr(error, "status_code", None)
+    code = getattr(error, "code", None)
+    combined = f"{status or ''} {code or ''} {message}"
+
+    if "api key" in combined or "api_key" in combined or "unauth" in combined:
+        return "invalid API key"
+    if "quota" in combined or "resource exhausted" in combined or "429" in combined:
+        return "API quota exhausted"
+    if "model" in combined and (
+        "not found" in combined or "unsupported" in combined or "404" in combined
+    ):
+        return "unsupported or unavailable model"
+    if isinstance(error, (httpx.TimeoutException, TimeoutError)):
+        return "network timeout"
+    if isinstance(error, httpx.HTTPError):
+        return "network or HTTP provider error"
+    if isinstance(error, (ConnectionError, OSError)):
+        return "network connection error"
+    return "provider request or response error"
 
 
 def recommend_meals(
@@ -169,17 +229,10 @@ def recommend_meals(
             or set(reason_ids) != set(selected_ids)
         ):
             raise ValueError("The LLM response referenced unexpected food IDs.")
-    except (
-        httpx.HTTPError,
-        ValueError,
-        KeyError,
-        IndexError,
-        TypeError,
-        ValidationError,
-    ) as error:
+    except Exception as error:
         logger.warning(
             "LLM explanation unavailable; using deterministic result (%s).",
-            type(error).__name__,
+            _llm_error_category(error),
         )
         return AgentRecommendationResponse(
             summary=(

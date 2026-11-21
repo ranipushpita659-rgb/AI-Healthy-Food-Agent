@@ -29,7 +29,8 @@ The browser is served by FastAPI at `/`; CSS and JavaScript are served from
 
 The agent service first calculates BMI/calorie estimates and generates a
 deterministic plan. It sends only a compact goal/preferences summary, calculated
-values, and selected dataset foods to the configured OpenAI-compatible provider.
+values, and selected dataset foods to Google Gemini through `google-genai`, or to
+an optional OpenAI-compatible provider.
 The LLM may explain those foods but cannot add or replace food IDs. Missing
 credentials, provider failures, and malformed or ungrounded output return the
 deterministic plan with an explicit fallback message.

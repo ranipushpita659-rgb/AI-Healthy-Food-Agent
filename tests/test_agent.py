@@ -1,6 +1,7 @@
 """Tests for constrained AI explanations and deterministic fallbacks."""
 
 import json
+from types import SimpleNamespace
 
 import httpx
 
@@ -47,6 +48,7 @@ def test_missing_llm_credentials_returns_deterministic_recommendation(
 def test_llm_timeout_returns_deterministic_recommendation(monkeypatch) -> None:
     monkeypatch.setattr(settings, "llm_api_key", "test-key")
     monkeypatch.setattr(settings, "llm_model", "test-model")
+    monkeypatch.setattr(settings, "llm_provider", "openai")
 
     def timeout(url, **request_options):
         assert url.endswith("/chat/completions")
@@ -65,6 +67,7 @@ def test_llm_timeout_returns_deterministic_recommendation(monkeypatch) -> None:
 def test_llm_cannot_return_unselected_food_ids(monkeypatch) -> None:
     monkeypatch.setattr(settings, "llm_api_key", "test-key")
     monkeypatch.setattr(settings, "llm_model", "test-model")
+    monkeypatch.setattr(settings, "llm_provider", "openai")
     response = httpx.Response(
         200,
         json={
@@ -108,6 +111,7 @@ def test_llm_explanation_is_accepted_when_it_uses_only_plan_foods(
 ) -> None:
     monkeypatch.setattr(settings, "llm_api_key", "test-key")
     monkeypatch.setattr(settings, "llm_model", "test-model")
+    monkeypatch.setattr(settings, "llm_provider", "openai")
 
     def explain(url, **request_kwargs):
         assert url.endswith("/chat/completions")
@@ -154,3 +158,85 @@ def test_llm_explanation_is_accepted_when_it_uses_only_plan_foods(
     assert result.source == "llm"
     assert result.summary == "A data-grounded meal plan."
     assert result.message is None
+
+
+def test_gemini_explanation_is_accepted(monkeypatch) -> None:
+    monkeypatch.setattr(settings, "llm_api_key", "test-key")
+    monkeypatch.setattr(settings, "llm_model", "gemini-test")
+    monkeypatch.setattr(settings, "llm_provider", "gemini")
+
+    class FakeModels:
+        def generate_content(self, **kwargs):
+            assert kwargs["model"] == "gemini-test"
+            assert "Actual recommendation context" in kwargs["contents"]
+            assert kwargs["config"].response_mime_type == "application/json"
+            selected_ids = [
+                item.food_id
+                for meal in kwargs.get("_unused", [])
+                for item in meal.items
+            ]
+            food_ids = json.loads(
+                kwargs["contents"].split("Actual recommendation context:\n", 1)[1]
+            )
+            food_ids = list(
+                dict.fromkeys(
+                    food["food_id"] for food in food_ids["candidate_foods"]
+                )
+            )
+            del selected_ids
+            return SimpleNamespace(
+                text=json.dumps(
+                    {
+                        "summary": "Gemini explains this grounded plan.",
+                        "reasons": [
+                            {
+                                "food_id": food_id,
+                                "reason": "This food contributes to the planned nutrition.",
+                            }
+                            for food_id in food_ids
+                        ],
+                    }
+                )
+            )
+
+    class FakeClient:
+        def __init__(self, **kwargs):
+            assert kwargs["api_key"] == "test-key"
+            self.models = FakeModels()
+
+    monkeypatch.setattr(
+        "app.services.agent_service.genai.Client",
+        FakeClient,
+    )
+
+    result = recommend_meals(make_request())
+
+    assert result.source == "llm"
+    assert result.summary == "Gemini explains this grounded plan."
+
+
+def test_gemini_api_error_returns_deterministic_recommendation(monkeypatch) -> None:
+    monkeypatch.setattr(settings, "llm_api_key", "invalid-test-key")
+    monkeypatch.setattr(settings, "llm_model", "gemini-test")
+    monkeypatch.setattr(settings, "llm_provider", "gemini")
+
+    class FakeClient:
+        def __init__(self, **kwargs):
+            self.models = SimpleNamespace(
+                generate_content=self._generate_content,
+            )
+
+        def _generate_content(self, **kwargs):
+            error = RuntimeError("API key not valid")
+            error.status_code = 401
+            raise error
+
+    monkeypatch.setattr(
+        "app.services.agent_service.genai.Client",
+        FakeClient,
+    )
+
+    result = recommend_meals(make_request())
+
+    assert result.source == "deterministic"
+    assert result.message is not None

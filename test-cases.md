@@ -15,7 +15,7 @@ The tests cover:
 | Meal planning | Four meal slots, calorie target fallback, preferences/exclusions, missing matches, and an empty catalog. |
 | API validation | Health endpoint, missing/invalid profile fields, calculations, foods, nutrition, and meal-plan errors. |
 | Persistence | Profile/plan/weight writes, history, and records surviving a new SQLAlchemy session. |
-| Agent integration | Missing credentials, provider timeout, invalid/unselected food IDs, valid constrained explanation, and persisted API result. |
+| Agent integration | Missing credentials, Gemini/OpenAI provider failures, provider timeout, invalid/unselected food IDs, valid constrained explanation, and persisted API result. |
 
 Manual UI checks:
 

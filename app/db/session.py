@@ -29,8 +29,10 @@ SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False
 
 
 def initialize_database() -> None:
-    """Create missing tables for the configured database."""
-    Base.metadata.create_all(bind=engine)
+    """Apply all pending database migrations."""
+    from app.db.migrations import upgrade_database
+
+    upgrade_database(settings.database_url)
 
 
 def get_session() -> Iterator[Session]:
