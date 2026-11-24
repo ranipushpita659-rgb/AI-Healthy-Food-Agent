@@ -42,7 +42,7 @@
           <section class="form-card" aria-labelledby="pantry-title">
             <div class="card-heading pantry-heading"><span class="section-number">02</span><div><h2 id="pantry-title">What's in your kitchen?</h2><p>We've started with everyday favourites. Add or remove foods to match your pantry.</p></div><button id="open-food-picker" class="button button-small button-outline add-food-button" type="button"><span aria-hidden="true">＋</span> Add food</button></div>
             <div id="selected-foods" class="selected-foods" aria-live="polite"></div>
-            <p id="pantry-help" class="helper-text">Your plan will only use the foods selected above.</p>
+            <p id="pantry-help" class="helper-text">Your plan will only use foods from the food list. Custom foods appear in your pantry but aren't included in recommendations or nutrition estimates.</p>
             <fieldset class="choice-group">
               <legend>Food preferences <small>optional</small></legend>
               <div class="choice-list">
@@ -67,6 +67,11 @@
         <div class="dialog-heading"><div><p class="eyebrow">YOUR PANTRY</p><h2 id="picker-title">Add foods</h2></div><button id="close-food-picker" class="icon-button" type="button" aria-label="Close food selector">×</button></div>
         <p class="helper-text">Search the food list and select everything you have available.</p>
         <label class="field"><span>Search foods</span><input id="food-search" type="search" placeholder="Try rice, fish or papaya" autocomplete="off" /></label>
+        <form id="custom-food-form">
+          <label class="field"><span>Add a food not listed</span><span class="custom-food-entry"><input id="custom-food-name" type="text" maxlength="80" placeholder="Enter a food name" autocomplete="off" /><button class="button button-small button-outline" type="submit">Add</button></span></label>
+        </form>
+        <p id="custom-food-status" class="form-status" role="status" aria-live="polite"></p>
+        <p class="helper-text">Custom foods are shown in your pantry, but aren't included in meal recommendations or nutrition estimates.</p>
         <div id="food-picker-options" class="food-picker-options" aria-live="polite"></div>
         <div class="dialog-actions"><span id="picker-status" class="form-status" role="status" aria-live="polite"></span><button id="add-selected-foods" class="button button-primary" type="button">Add selected foods</button></div>
       </dialog>

@@ -6,6 +6,9 @@ const foodPicker = document.querySelector("#food-picker");
 const foodSearch = document.querySelector("#food-search");
 const foodPickerOptions = document.querySelector("#food-picker-options");
 const pickerStatus = document.querySelector("#picker-status");
+const customFoodForm = document.querySelector("#custom-food-form");
+const customFoodName = document.querySelector("#custom-food-name");
+const customFoodStatus = document.querySelector("#custom-food-status");
 
 const starterFoodIds = [
   "white_rice_cooked",
@@ -20,6 +23,7 @@ const starterFoodIds = [
 ];
 const foodsById = new Map();
 const selectedFoodIds = new Set(starterFoodIds);
+const customFoods = new Map();
 
 function createTextElement(tagName, className, text) {
   const element = document.createElement(tagName);
@@ -30,7 +34,7 @@ function createTextElement(tagName, className, text) {
 
 function renderSelectedFoods() {
   selectedFoodsContainer.replaceChildren();
-  if (selectedFoodIds.size === 0) {
+  if (selectedFoodIds.size === 0 && customFoods.size === 0) {
     selectedFoodsContainer.append(
       createTextElement("p", "pantry-empty", "No foods selected yet. Add foods from your kitchen to continue."),
     );
@@ -48,6 +52,19 @@ function renderSelectedFoods() {
       selectedFoodIds.delete(foodId);
       renderSelectedFoods();
       renderFoodOptions();
+    });
+    chip.append(removeButton);
+    selectedFoodsContainer.append(chip);
+  });
+
+  customFoods.forEach((name, normalizedName) => {
+    const chip = createTextElement("span", "food-chip", name);
+    const removeButton = createTextElement("button", "", "×");
+    removeButton.type = "button";
+    removeButton.setAttribute("aria-label", `Remove ${name}`);
+    removeButton.addEventListener("click", () => {
+      customFoods.delete(normalizedName);
+      renderSelectedFoods();
     });
     chip.append(removeButton);
     selectedFoodsContainer.append(chip);
@@ -113,6 +130,37 @@ document.querySelector("#close-food-picker").addEventListener("click", () => {
 });
 
 foodSearch.addEventListener("input", renderFoodOptions);
+
+customFoodForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const name = customFoodName.value.trim();
+  const normalizedName = name.toLocaleLowerCase();
+  if (!name) {
+    customFoodStatus.textContent = "Enter a food name to add.";
+    customFoodStatus.className = "form-status error";
+    return;
+  }
+  if (
+    [...foodsById.values()].some(
+      (food) => food.name.trim().toLocaleLowerCase() === normalizedName,
+    )
+  ) {
+    customFoodStatus.textContent = "This food is already in the food list. Search and select it above.";
+    customFoodStatus.className = "form-status error";
+    return;
+  }
+  if (customFoods.has(normalizedName)) {
+    customFoodStatus.textContent = "This food is already in your pantry.";
+    customFoodStatus.className = "form-status error";
+    return;
+  }
+
+  customFoods.set(normalizedName, name);
+  customFoodName.value = "";
+  customFoodStatus.textContent = `${name} added to your pantry.`;
+  customFoodStatus.className = "form-status success";
+  renderSelectedFoods();
+});
 
 document.querySelector("#add-selected-foods").addEventListener("click", () => {
   const additions = [
