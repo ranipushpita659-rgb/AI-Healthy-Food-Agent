@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Create a personalized meal plan with foods you have at home." />
+    <title>Create your plan — Bhojon</title>
+    <link rel="stylesheet" href="/static/css/site.css" />
+    <script src="/static/js/api.js" defer></script>
+    <script src="/static/js/planner.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Bhojon home"><span class="brand-mark">b</span><span>Bhojon<span class="brand-dot">.</span></span></a>
+      <nav class="main-nav" aria-label="Main navigation"><a href="/">Home</a><a class="active" href="/planner">Create a plan</a><a href="/wellbeing">Wellbeing</a></nav>
+      <a class="button button-small button-outline header-action" href="/wellbeing">Wellbeing <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <main id="main-content" class="page-width inner-page">
+      <div class="page-intro">
+        <div><p class="eyebrow">YOUR FOOD, YOUR GOALS</p><h1>Let's make a plan<br /><em>that fits your day.</em></h1><p>Tell us what matters to you and what's in your kitchen. We'll take it from there.</p></div>
+        <div class="progress-label"><span>STEP 1 OF 2</span><span class="progress-track"><span></span></span><span>Your details</span></div>
+      </div>
+
+      <form id="profile-form" class="planner-layout">
+        <div class="planner-main">
+          <section class="form-card" aria-labelledby="profile-title">
+            <div class="card-heading"><span class="section-number">01</span><div><h2 id="profile-title">A little about you</h2><p>Used to estimate a daily calorie range for adults.</p></div></div>
+            <div class="form-grid">
+              <label class="field"><span>Age <small>years</small></span><input name="age" type="number" min="18" max="120" required placeholder="e.g. 25" /></label>
+              <label class="field"><span>Gender</span><select name="gender" required><option value="">Select</option><option value="female">Female</option><option value="male">Male</option><option value="other">Other</option><option value="prefer_not_to_say">Prefer not to say</option></select></label>
+              <label class="field"><span>Height <small>cm</small></span><input name="height_cm" type="number" min="0.1" step="0.1" required placeholder="e.g. 168" /></label>
+              <label class="field"><span>Weight <small>kg</small></span><input name="weight_kg" type="number" min="0.1" step="0.1" required placeholder="e.g. 65" /></label>
+            </div>
+            <div class="form-grid">
+              <label class="field"><span>Usual activity</span><select name="activity_level" required><option value="">Choose one</option><option value="sedentary">Mostly sitting</option><option value="light">Light activity</option><option value="moderate">Moderate activity</option><option value="active">Active</option><option value="very_active">Very active</option></select></label>
+              <label class="field"><span>Your goal</span><select name="health_goal" required><option value="">Choose one</option><option value="lose_weight">Lose weight</option><option value="maintain_weight">Maintain weight</option><option value="gain_weight">Gain weight</option></select></label>
+            </div>
+          </section>
+
+          <section class="form-card" aria-labelledby="pantry-title">
+            <div class="card-heading pantry-heading"><span class="section-number">02</span><div><h2 id="pantry-title">What's in your kitchen?</h2><p>We've started with everyday favourites. Add or remove foods to match your pantry.</p></div><button id="open-food-picker" class="button button-small button-outline add-food-button" type="button"><span aria-hidden="true">＋</span> Add food</button></div>
+            <div id="selected-foods" class="selected-foods" aria-live="polite"></div>
+            <p id="pantry-help" class="helper-text">Your plan will only use the foods selected above.</p>
+            <fieldset class="choice-group">
+              <legend>Food preferences <small>optional</small></legend>
+              <div class="choice-list">
+                <label class="choice"><input type="checkbox" name="food_preferences" value="vegetarian" /> Vegetarian</label>
+                <label class="choice"><input type="checkbox" name="food_preferences" value="vegan" /> Vegan</label>
+                <label class="choice"><input type="checkbox" name="food_preferences" value="halal" /> Halal</label>
+              </div>
+              <p class="helper-text">Halal preference excludes foods without a verified or ingredient-permissible status.</p>
+            </fieldset>
+            <label class="field exclude-field"><span>Foods to exclude <small>optional · separate with commas</small></span><input name="excluded_foods" type="text" placeholder="e.g. peanuts, shellfish" /></label>
+          </section>
+          <div class="form-submit-row"><p id="profile-status" class="form-status" role="status" aria-live="polite"></p><button id="submit-profile" class="button button-primary" type="submit">Generate my plan <span aria-hidden="true">→</span></button></div>
+        </div>
+
+        <aside class="planner-aside">
+          <div class="aside-card"><span class="aside-icon">✳</span><h2>Familiar food.<br />Thoughtful choices.</h2><p>From bhaat and dal to fruit and greens, build a plan around the food you know and love.</p><div class="aside-tags"><span>Rice</span><span>Lentils</span><span>Fish</span><span>Seasonal produce</span></div></div>
+          <p class="aside-note">Nutrition values are estimates based on a structured food database. Cooking methods and portions can change the final values.</p>
+        </aside>
+      </form>
+
+      <dialog id="food-picker" class="food-dialog" aria-labelledby="picker-title">
+        <div class="dialog-heading"><div><p class="eyebrow">YOUR PANTRY</p><h2 id="picker-title">Add foods</h2></div><button id="close-food-picker" class="icon-button" type="button" aria-label="Close food selector">×</button></div>
+        <p class="helper-text">Search the food list and select everything you have available.</p>
+        <label class="field"><span>Search foods</span><input id="food-search" type="search" placeholder="Try rice, fish or papaya" autocomplete="off" /></label>
+        <div id="food-picker-options" class="food-picker-options" aria-live="polite"></div>
+        <div class="dialog-actions"><span id="picker-status" class="form-status" role="status" aria-live="polite"></span><button id="add-selected-foods" class="button button-primary" type="button">Add selected foods</button></div>
+      </dialog>
+    </main>
+    <footer class="site-footer page-width"><a class="brand footer-brand" href="/"><span class="brand-mark">b</span><span>Bhojon<span class="brand-dot">.</span></span></a><p>Thoughtful food planning for everyday life.</p><span>Nutrition estimates are for general information, not medical advice.</span></footer>
+  </body>
+</html>

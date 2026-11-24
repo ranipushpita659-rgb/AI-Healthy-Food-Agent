@@ -24,6 +24,43 @@ MEAL_CALORIE_SHARES = {
     "dinner": 0.30,
     "snack": 0.10,
 }
+MEAL_COMPONENTS = {
+    "breakfast": (
+        ("grain", 0.40),
+        ("protein", 0.30),
+        ("fruit", 0.20),
+        ("dairy", 0.10),
+        ("nuts", 0.10),
+    ),
+    "lunch": (
+        ("grain", 0.52),
+        ("protein", 0.25),
+        ("legume", 0.13),
+        ("vegetable", 0.10),
+    ),
+    "dinner": (
+        ("grain", 0.52),
+        ("protein", 0.25),
+        ("legume", 0.13),
+        ("vegetable", 0.10),
+    ),
+    "snack": (
+        ("fruit", 0.80),
+        ("dairy", 0.30),
+        ("nuts", 0.20),
+        ("grain", 0.20),
+    ),
+}
+MAX_COMPONENTS = {"breakfast": 3, "lunch": 4, "dinner": 4, "snack": 2}
+MAX_SERVINGS_BY_CATEGORY = {
+    "grain": 3.5,
+    "protein": 1.2,
+    "legume": 1.5,
+    "vegetable": 2.5,
+    "fruit": 2.0,
+    "dairy": 1.5,
+    "nuts": 0.3,
+}
 AVAILABLE_FOOD_TERMS = {
     AvailableFood.RICE: {"rice"},
     AvailableFood.BREAD: {"bread"},
@@ -94,8 +131,11 @@ def _food_is_excluded(food: FoodItem, exclusions: set[str]) -> bool:
 def _food_matches_availability(
     food: FoodItem,
     available_foods: set[AvailableFood],
+    available_food_ids: set[str] | None = None,
 ) -> bool:
-    if not available_foods:
+    if not available_foods and not available_food_ids:
+        return True
+    if available_food_ids and food.id in available_food_ids:
         return True
 
     name_words = set(re.findall(r"[a-z0-9]+", food.name.casefold()))
@@ -109,6 +149,7 @@ def _eligible_foods(
     foods: Sequence[FoodItem],
     profile: ProfileRequest,
     available_foods: set[AvailableFood],
+    available_food_ids: set[str],
 ) -> list[FoodItem]:
     preferences = {preference.casefold() for preference in profile.food_preferences}
     exclusions = {exclusion.casefold() for exclusion in profile.excluded_foods}
@@ -117,7 +158,7 @@ def _eligible_foods(
         food
         for food in foods
         if _food_matches_preferences(food, preferences)
-        and _food_matches_availability(food, available_foods)
+        and _food_matches_availability(food, available_foods, available_food_ids)
         and not _food_is_excluded(food, exclusions)
     ]
 
@@ -128,23 +169,21 @@ def _meal_target(daily_target: float, slot: str) -> float:
 
 def _select_food(
     candidates: list[FoodItem],
-    slot: str,
-    daily_target: float,
+    category: str,
     prior_ids: set[str],
 ) -> FoodItem:
-    """Choose one deterministic food close to one serving, preferring variety."""
-    target_calories = _meal_target(daily_target, slot)
-
-    def score(food: FoodItem) -> tuple[float, int, str]:
-        servings = _serving_count(food, target_calories)
-        variety_penalty = int(food.id in prior_ids)
-        return (
-            abs(servings - 1),
-            variety_penalty,
+    """Choose a varied, locally familiar food for a meal component."""
+    category_candidates = [
+        food for food in candidates if food.category.casefold() == category
+    ]
+    return min(
+        category_candidates,
+        key=lambda food: (
+            int("bangladesh" not in food.tags),
+            int(food.id in prior_ids),
             food.id,
-        )
-
-    return min(candidates, key=score)
+        ),
+    )
 
 
 def _serving_count(food: FoodItem, target_calories: float) -> float:
@@ -154,25 +193,37 @@ def _serving_count(food: FoodItem, target_calories: float) -> float:
 
 
 def _build_slot(
-    food: FoodItem,
+    foods: Sequence[FoodItem],
     slot: str,
     daily_target: float,
 ) -> MealPlanSlot:
-    servings = _serving_count(food, _meal_target(daily_target, slot))
-    nutrition = analyze_nutrition(
-        [FoodServing(food_id=food.id, servings=servings)],
-        foods=[food],
-    )
-    return MealPlanSlot(
-        meal=slot,
-        items=[
+    items: list[MealPlanItem] = []
+    for food in foods:
+        component_weight = next(
+            weight
+            for category, weight in MEAL_COMPONENTS[slot]
+            if category == food.category.casefold()
+        )
+        serving_target = _meal_target(daily_target, slot) * component_weight
+        servings = min(
+            _serving_count(food, serving_target),
+            MAX_SERVINGS_BY_CATEGORY.get(food.category.casefold(), 1.5),
+        )
+        items.append(
             MealPlanItem(
                 food_id=food.id,
                 name=food.name,
                 servings=servings,
                 serving_g=food.serving_g,
             )
-        ],
+        )
+    nutrition = analyze_nutrition(
+        [FoodServing(food_id=item.food_id, servings=item.servings) for item in items],
+        foods=list(foods),
+    )
+    return MealPlanSlot(
+        meal=slot,
+        items=items,
         nutrition=nutrition,
     )
 
@@ -205,10 +256,19 @@ def generate_meal_plan(
     """
     catalog = list(foods) if foods is not None else load_foods()
     profile = request.profile
+    available_food_ids = set(request.available_food_ids)
+    catalog_ids = {food.id for food in catalog}
+    unknown_food_ids = available_food_ids - catalog_ids
+    if unknown_food_ids:
+        raise ValueError(
+            "Selected foods are not in the food catalog: "
+            + ", ".join(sorted(unknown_food_ids))
+        )
     eligible_foods = _eligible_foods(
         catalog,
         profile,
         set(request.available_foods),
+        available_food_ids,
     )
 
     candidates_by_slot = {
@@ -240,14 +300,25 @@ def generate_meal_plan(
     selected_ids: set[str] = set()
     meals: list[MealPlanSlot] = []
     for slot in MEAL_SLOTS:
-        selected_food = _select_food(
-            candidates_by_slot[slot],
-            slot,
-            daily_target,
-            selected_ids,
-        )
-        selected_ids.add(selected_food.id)
-        meals.append(_build_slot(selected_food, slot, daily_target))
+        chosen_foods: list[FoodItem] = []
+        for category, _ in MEAL_COMPONENTS[slot]:
+            category_candidates = [
+                food
+                for food in candidates_by_slot[slot]
+                if food.category.casefold() == category
+            ]
+            if not category_candidates:
+                continue
+            chosen_food = _select_food(
+                category_candidates,
+                category,
+                selected_ids,
+            )
+            chosen_foods.append(chosen_food)
+            selected_ids.add(chosen_food.id)
+            if len(chosen_foods) == MAX_COMPONENTS[slot]:
+                break
+        meals.append(_build_slot(chosen_foods, slot, daily_target))
 
     return MealPlanResponse(
         meals=meals,
@@ -255,8 +326,7 @@ def generate_meal_plan(
         daily_calorie_target_kcal=daily_target,
         goal=profile.health_goal.value,
         notice=(
-            "This is an illustrative plan built from the available food dataset "
-            "and calorie assumptions. It is not medical advice or a prescribed "
-            "diet. Dataset coverage is limited; verify ingredients and allergens."
+            "This estimated plan uses the selected foods and serving assumptions. "
+            "It is not a prescribed diet. Verify ingredients and allergens."
         ),
     )

@@ -6,7 +6,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     """Settings used to configure the FastAPI application."""
 
-    app_name: str = "AI Healthy Food Agent"
+    app_name: str = "Bhojon | Healthy Food Planner"
     environment: str = "development"
     database_url: str = "sqlite:///./ai_healthy_food_agent.db"
     llm_api_key: str | None = None

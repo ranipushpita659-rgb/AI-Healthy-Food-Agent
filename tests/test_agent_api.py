@@ -77,6 +77,7 @@ def test_recommendation_falls_back_and_persists_history(monkeypatch) -> None:
     }
     assert recommended_ids <= {
         "brown_rice_cooked",
+        "white_rice_cooked",
         "egg_whole_boiled",
         "banana_raw",
         "apple_raw_skin",

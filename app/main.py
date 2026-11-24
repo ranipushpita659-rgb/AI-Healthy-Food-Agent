@@ -39,5 +39,23 @@ app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
 
 @app.get("/", include_in_schema=False)
 def get_homepage() -> FileResponse:
-    """Serve the browser-based dashboard."""
+    """Serve the public landing page."""
     return FileResponse(FRONTEND_DIR / "index.html")
+
+
+@app.get("/planner", include_in_schema=False)
+def get_planner_page() -> FileResponse:
+    """Serve the profile and pantry form."""
+    return FileResponse(FRONTEND_DIR / "planner.html")
+
+
+@app.get("/plan", include_in_schema=False)
+def get_plan_page() -> FileResponse:
+    """Serve the generated plan and nutrition view."""
+    return FileResponse(FRONTEND_DIR / "plan.html")
+
+
+@app.get("/wellbeing", include_in_schema=False)
+def get_wellbeing_page() -> FileResponse:
+    """Serve the optional hydration reminder."""
+    return FileResponse(FRONTEND_DIR / "wellbeing.html")

@@ -100,6 +100,7 @@ def test_food_endpoint_lists_and_filters_foods() -> None:
         "banana_raw",
         "apple_raw_skin",
         "orange_raw",
+        "papaya_raw",
     }
 
 

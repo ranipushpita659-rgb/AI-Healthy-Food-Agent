@@ -1,8 +1,8 @@
-# AI Healthy Food Agent
+# Bhojon — AI Healthy Food Agent
 
-A browser-based educational demo for adult meal planning. It combines validated
+A Bangladesh-focused meal-planning web app for adults. Bhojon combines validated
 profile input, deterministic calorie and nutrition calculations, a structured
-food dataset, optional LLM explanations, and local SQLite persistence.
+food catalog, optional AI explanations, and local SQLite persistence.
 
 ## Run locally (Windows PowerShell)
 
@@ -34,7 +34,7 @@ code.
 
 | Variable | Purpose | Default |
 | --- | --- | --- |
-| `APP_NAME` | FastAPI application title | `AI Healthy Food Agent` |
+| `APP_NAME` | FastAPI application title | `Bhojon | Healthy Food Planner` |
 | `ENVIRONMENT` | Environment label | `development` |
 | `DATABASE_URL` | SQLAlchemy database connection | `sqlite:///./ai_healthy_food_agent.db` |
 | `LLM_API_KEY` | Server-side provider credential | Empty (deterministic fallback) |
@@ -63,27 +63,31 @@ Start the app and open its browser UI:
 python -m uvicorn app.main:app --reload
 ```
 
-- Dashboard: <http://127.0.0.1:8000>
+- Landing page: <http://127.0.0.1:8000>
+- Create a plan: <http://127.0.0.1:8000/planner>
+- View a plan: <http://127.0.0.1:8000/plan>
+- Wellbeing: <http://127.0.0.1:8000/wellbeing>
 - Interactive API documentation: <http://127.0.0.1:8000/docs>
 - Health check: <http://127.0.0.1:8000/api/health>
 
-Do not open `frontend/index.html` directly with `file://`; the page uses the
+Open the app through FastAPI rather than `file://`; its pages use the
 FastAPI-served `/api` and `/static` paths.
 
-## Demo
+## Using the app
 
-1. Fill in the adult profile, goal, available food items, preferences, and any
-   foods to exclude. Selected available foods constrain the generated plan; if
-   none are selected, the planner can use the full catalog.
-2. Select **Generate meal plan**.
-3. Review the estimated calorie range, generated meal slots, nutrition totals,
-   assumptions, and safety notes. The plan and profile are saved locally.
-4. In the Water Reminder panel, choose an interval and start/pause the on-page
-   reminder. Log a glass to update the temporary counter.
+1. Select **Create a plan**, then enter your adult profile, activity level, and
+   goal.
+2. Review the starter pantry, add foods you have available, and set any food
+   preferences or exclusions.
+3. Generate your plan to review meals beside calorie and nutrition estimates.
+   The plan and profile are saved locally.
+4. Select **Download PDF** and choose **Save as PDF** in your browser's print
+   dialog to keep a clean copy of the plan.
+5. Use **Wellbeing** for an optional on-page water reminder and glass counter.
 
-The water counter and timer exist only in the current open page. Browser
-background-tab throttling may delay reminders; they do not run after the page is
-closed or reloaded.
+The water counter and timer exist only while the wellbeing page is open.
+Browser background-tab throttling may delay reminders; they do not run after
+the page is closed or reloaded.
 
 ## Tests
 
@@ -112,7 +116,7 @@ applies Alembic migrations on startup:
 - `meal_plans`: generated plan snapshots associated with a profile.
 - `weight_records`: optional measurements associated with a profile.
 
-For a local demo, run from the project root so the relative SQLite path is
+For local development, run from the project root so the relative SQLite path is
 predictable. The database is ignored by Git. This project has no authentication;
 do not expose it publicly or use it for production health data.
 
@@ -158,10 +162,12 @@ intentionally non-destructive and does not remove application tables or records.
   treatment, or an individualized prescription. They are not intended for
   people under 18, pregnant, or breastfeeding.
 - Food nutrition values are per 100 g and link to USDA FoodData Central records.
+  Bangladesh-familiar staples are included alongside general foods; meal
+  recommendations are limited to the foods selected in the pantry.
   Dietary tags are dataset classifications; verify product ingredients and
   allergen information. The catalog is not a substitute for product labels.
-- The added records use USDA FoodData Central SR Legacy (April 2018) values
-  from the [official download archive](https://fdc.nal.usda.gov/download-datasets/).
+- Food values are estimates for the catalogued ingredients; preparations such
+  as curries, frying, and added oil can change the final nutrition.
 - Halal filtering accepts ingredient-permissible items and explicitly verified
   items. Meat without a verified Halal source is marked unknown and excluded
   when the Halal preference is selected.
@@ -169,5 +175,5 @@ intentionally non-destructive and does not remove application tables or records.
   planner. It does not calculate authoritative nutrition values.
 - The reminder is an in-page timer and is not a background notification or
   medical hydration target.
-- The API has no user authentication or authorization and is for local
-  demonstration only.
+- The API has no user authentication or authorization. Add appropriate access
+  controls before exposing it beyond a trusted local environment.

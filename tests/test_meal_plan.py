@@ -97,10 +97,113 @@ def test_available_food_selection_limits_recommendations_to_selected_items() -> 
     assert recommended_ids
     assert recommended_ids <= {
         "brown_rice_cooked",
+        "white_rice_cooked",
         "egg_whole_boiled",
         "banana_raw",
         "apple_raw_skin",
     }
+
+
+def test_available_food_ids_limit_recommendations_to_selected_catalog_items() -> None:
+    selected_ids = {
+        "white_rice_cooked",
+        "tilapia_cooked",
+        "eggplant_cooked",
+        "papaya_raw",
+        "egg_whole_boiled",
+        "banana_raw",
+        "lentils_cooked",
+    }
+    request = MealPlanRequest.model_validate(
+        {
+            "profile": {
+                "age": 30,
+                "gender": "male",
+                "height_cm": 175,
+                "weight_kg": 70,
+                "activity_level": "sedentary",
+                "health_goal": "maintain_weight",
+            },
+            "available_food_ids": sorted(selected_ids),
+            "daily_calorie_target": 2000,
+        }
+    )
+
+    plan = generate_meal_plan(request)
+    recommended_ids = {
+        item.food_id for meal in plan.meals for item in meal.items
+    }
+
+    assert recommended_ids
+    assert recommended_ids <= selected_ids
+    assert recommended_ids & {
+        "white_rice_cooked",
+        "tilapia_cooked",
+        "eggplant_cooked",
+        "papaya_raw",
+    }
+
+
+def test_local_pantry_builds_multi_food_meals_with_portion_limits() -> None:
+    selected_ids = [
+        "white_rice_cooked",
+        "tilapia_cooked",
+        "eggplant_cooked",
+        "papaya_raw",
+        "egg_whole_boiled",
+        "banana_raw",
+        "spinach_raw",
+        "lentils_cooked",
+    ]
+    request = MealPlanRequest.model_validate(
+        {
+            "profile": {
+                "age": 30,
+                "gender": "male",
+                "height_cm": 175,
+                "weight_kg": 70,
+                "activity_level": "sedentary",
+                "health_goal": "maintain_weight",
+            },
+            "available_food_ids": selected_ids,
+            "daily_calorie_target": 2000,
+        }
+    )
+
+    plan = generate_meal_plan(request)
+    meals_by_name = {
+        meal.meal: {item.food_id for item in meal.items}
+        for meal in plan.meals
+    }
+
+    assert len(meals_by_name["breakfast"]) > 1
+    assert len(meals_by_name["lunch"]) > 1
+    assert len(meals_by_name["dinner"]) > 1
+    assert all(
+        item.servings <= 3.5
+        for meal in plan.meals
+        for item in meal.items
+    )
+    assert plan.daily_nutrition.calories_kcal > 0
+
+
+def test_unknown_available_food_ids_are_rejected() -> None:
+    request = MealPlanRequest.model_validate(
+        {
+            "profile": {
+                "age": 30,
+                "gender": "male",
+                "height_cm": 175,
+                "weight_kg": 70,
+                "activity_level": "sedentary",
+                "health_goal": "maintain_weight",
+            },
+            "available_food_ids": ["unknown-food"],
+        }
+    )
+
+    with pytest.raises(ValueError, match="not in the food catalog"):
+        generate_meal_plan(request)
 
 
 def test_unavailable_selected_foods_do_not_fall_back_to_other_foods() -> None:

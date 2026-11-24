@@ -8,16 +8,16 @@ const reminderToggle = document.querySelector("#water-reminder-toggle");
 
 let loggedWaterGlasses = 0;
 let reminderTimer = null;
-const demoProgressLimit = 8;
+const progressLimit = 8;
 
 function updateWaterCount() {
   waterCount.textContent = String(loggedWaterGlasses);
   waterProgress.setAttribute(
     "aria-valuenow",
-    String(Math.min(loggedWaterGlasses, demoProgressLimit)),
+    String(Math.min(loggedWaterGlasses, progressLimit)),
   );
   waterProgress.querySelector("span").style.width = `${Math.min(
-    (loggedWaterGlasses / demoProgressLimit) * 100,
+    (loggedWaterGlasses / progressLimit) * 100,
     100,
   )}%`;
 }

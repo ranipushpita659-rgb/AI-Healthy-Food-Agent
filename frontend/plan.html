@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Review your meal plan and understand its estimated nutrition." />
+    <title>Your food plan — Bhojon</title>
+    <link rel="stylesheet" href="/static/css/site.css" />
+    <script src="/static/js/plan.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header screen-only">
+      <a class="brand" href="/" aria-label="Bhojon home"><span class="brand-mark">b</span><span>Bhojon<span class="brand-dot">.</span></span></a>
+      <nav class="main-nav" aria-label="Main navigation"><a href="/">Home</a><a href="/planner">Create a plan</a><a href="/wellbeing">Wellbeing</a></nav>
+      <a class="button button-small button-outline header-action" href="/planner">New plan <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <main id="main-content" class="page-width inner-page results-page">
+      <div class="page-intro results-intro">
+        <div><p class="eyebrow">YOUR DAY, THOUGHTFULLY PLANNED</p><h1>Your food plan,<br /><em>all in one place.</em></h1><p id="plan-date">Your meals and nutrition, ready to review.</p></div>
+        <div class="results-actions screen-only"><a class="button button-outline" href="/planner">← Edit your details</a><button id="download-pdf" class="button button-primary" type="button"><span aria-hidden="true">↓</span> Download PDF</button></div>
+      </div>
+      <div id="plan-error" class="notice notice-error" role="status" hidden></div>
+      <div id="plan-content" class="results-layout">
+        <section class="form-card results-meals" aria-labelledby="meals-title">
+          <div class="card-heading"><span class="section-number">01</span><div><h2 id="meals-title">Your meal plan</h2><p id="plan-summary">A balanced outline for your day.</p></div></div>
+          <div id="meal-list" class="meal-list"></div>
+          <details id="plan-assumptions" class="plan-assumptions"><summary>About these estimates</summary><ul id="assumption-list"></ul><p id="safety-note"></p></details>
+          <p id="plan-notice" class="small-note"></p>
+        </section>
+        <aside class="form-card nutrition-side" aria-labelledby="nutrition-title">
+          <p class="eyebrow">UNDERSTAND YOUR FOOD</p>
+          <h2 id="nutrition-title">What's on your plate</h2>
+          <p class="nutrition-intro">Estimated nutrition across your plan. Values are based on the portions shown.</p>
+          <div id="calorie-highlight" class="calorie-highlight"></div>
+          <dl id="nutrition-grid" class="nutrition-grid"></dl>
+          <div class="calorie-range"><span>Estimated daily need</span><strong id="calorie-range-value">—</strong></div>
+          <p id="bmi-note" class="small-note"></p>
+          <p class="nutrition-disclaimer">These numbers are estimates, not a medical recommendation. Actual nutrition varies with ingredients and preparation.</p>
+        </aside>
+      </div>
+      <section id="plan-footer" class="plan-footer screen-only"><p>Want to try another combination?</p><a class="text-link" href="/planner">Make another plan <span aria-hidden="true">→</span></a></section>
+    </main>
+    <footer class="site-footer page-width screen-only"><a class="brand footer-brand" href="/"><span class="brand-mark">b</span><span>Bhojon<span class="brand-dot">.</span></span></a><p>Thoughtful food planning for everyday life.</p><span>Nutrition estimates are for general information, not medical advice.</span></footer>
+  </body>
+</html>

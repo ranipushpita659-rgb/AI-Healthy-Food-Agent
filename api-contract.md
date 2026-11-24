@@ -43,8 +43,10 @@ For meal-plan requests, `available_foods` is an optional top-level field. It
 accepts `rice`, `bread`, `oats`, `egg`,
 `chicken`, `fish`, `potato`, `tomato`, `carrot`, `spinach`, `milk`, `yogurt`,
 `banana`, `apple`, `orange`, `lentils`, `beans`, and `nuts`. When omitted or
-empty, no availability filter is applied. Selected items only match foods in
-the current structured dataset.
+empty, no availability filter is applied. The web app uses `available_food_ids`
+instead, an optional list of up to 100 exact IDs from `GET /api/foods`; the
+planner only recommends foods selected from the current catalog. Unknown IDs
+are rejected.
 
 The profile form uses `POST /api/agent/recommend`, which accepts this object as
 `profile` and an optional `daily_calorie_target` (500–10000 kcal). The response
@@ -67,7 +69,12 @@ Agent request example:
     "food_preferences": [],
     "excluded_foods": []
   },
-  "available_foods": ["rice", "egg", "banana", "apple"],
+  "available_food_ids": [
+    "white_rice_cooked",
+    "egg_whole_boiled",
+    "banana_raw",
+    "apple_raw_skin"
+  ],
   "daily_calorie_target": 2000
 }
 ```

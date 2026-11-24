@@ -1,7 +1,6 @@
 """Tests for loading and filtering the structured food dataset."""
 
 import json
-import re
 from pathlib import Path
 
 import pytest
@@ -14,23 +13,23 @@ from app.services.meal_plan_service import AVAILABLE_FOOD_TERMS, _food_matches_a
 def test_loads_valid_food_records() -> None:
     foods = load_foods()
 
-    assert len(foods) == 18
+    assert len(foods) == 22
     assert foods[0].id == "banana_raw"
     assert next(food for food in foods if food.id == "egg_whole_boiled").allergens == [
         "egg"
     ]
 
 
-def test_every_ui_food_option_has_a_verified_catalog_record() -> None:
+def test_food_picker_uses_the_food_catalog_and_available_food_groups_are_covered() -> None:
     foods = load_foods()
     assert set(AVAILABLE_FOOD_TERMS) == set(AvailableFood)
     html = (
-        Path(__file__).resolve().parents[1] / "frontend" / "index.html"
+        Path(__file__).resolve().parents[1] / "frontend" / "planner.html"
     ).read_text(encoding="utf-8")
-    ui_options = set(
-        re.findall(r'name="available_foods"\s+value="([^"]+)"', html)
-    )
-    assert ui_options == {food.value for food in AvailableFood}
+    assert 'id="open-food-picker"' in html
+    assert 'window.apiClient.get("/api/foods")' in (
+        Path(__file__).resolve().parents[1] / "frontend" / "js" / "planner.js"
+    ).read_text(encoding="utf-8")
 
     for available_food in AvailableFood:
         assert any(
@@ -63,6 +62,7 @@ def test_filters_foods_by_category_and_tag() -> None:
         "banana_raw",
         "apple_raw_skin",
         "orange_raw",
+        "papaya_raw",
     }
 
 

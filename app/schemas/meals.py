@@ -38,6 +38,7 @@ class MealPlanRequest(BaseModel):
 
     profile: ProfileRequest
     available_foods: list[AvailableFood] = Field(default_factory=list)
+    available_food_ids: list[str] = Field(default_factory=list, max_length=100)
     daily_calorie_target: float | None = Field(default=None, ge=500, le=10000)
 
     @model_validator(mode="after")

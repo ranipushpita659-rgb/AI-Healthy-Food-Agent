@@ -55,8 +55,8 @@ def calculate_calorie_need(profile: ProfileRequest) -> CalorieEstimate:
     model assumption. For other or undisclosed gender values, both equations
     are evaluated and returned as a range rather than silently selecting one.
 
-    Activity multipliers and the +/-300 kcal goal adjustment are transparent
-    educational assumptions, not an individualized medical prescription.
+    Activity multipliers and the +/-300 kcal goal adjustment are approximate
+    assumptions, not an individualized medical prescription.
     These estimates are not intended for people under 18, pregnant, or
     breastfeeding.
     """
@@ -115,7 +115,7 @@ def calculate_calorie_need(profile: ProfileRequest) -> CalorieEstimate:
         "moderate 1.55, active 1.725, very active 1.9.",
         "Goal targets apply an illustrative -300 kcal/day for weight loss, "
         "0 for maintenance, or +300 kcal/day for weight gain.",
-        "Results are estimates for general education, not medical advice or a prescription.",
+        "Results are estimates for general information, not medical advice or a prescription.",
     ]
 
     return CalorieEstimate(

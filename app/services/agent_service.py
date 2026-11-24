@@ -32,7 +32,7 @@ FALLBACK_MESSAGE = (
     "AI explanation is unavailable; the deterministic meal plan is shown instead."
 )
 SAFETY_NOTE = (
-    "This is general educational information, not diagnosis or treatment. "
+    "This is general information, not diagnosis or treatment. "
     "For diabetes, high blood pressure, PCOS, allergies, or other medical "
     "concerns, consult a qualified clinician or dietitian."
 )
@@ -69,10 +69,7 @@ def _fallback_reasons(plan: MealPlanResponse) -> list[AgentFoodReason]:
                 item.food_id,
                 AgentFoodReason(
                     food_id=item.food_id,
-                    reason=(
-                        "Chosen by the deterministic planner from eligible "
-                        "dataset foods."
-                    ),
+                    reason="Selected from the foods available for your plan.",
                 ),
             )
     return list(reasons_by_food.values())
@@ -112,6 +109,7 @@ def _build_context(
         "available_foods": [
             food.value for food in request.available_foods
         ],
+        "available_food_ids": request.available_food_ids,
         "food_preferences": request.profile.food_preferences,
         "bmi": calculate_bmi(request.profile.height_cm, request.profile.weight_kg),
         "planned_daily_calorie_target_kcal": plan.daily_calorie_target_kcal,
@@ -234,10 +232,14 @@ def recommend_meals(
             "LLM explanation unavailable; using deterministic result (%s).",
             _llm_error_category(error),
         )
+        goal_label = {
+            "lose_weight": "weight loss",
+            "maintain_weight": "weight maintenance",
+            "gain_weight": "weight gain",
+        }[request.profile.health_goal.value]
         return AgentRecommendationResponse(
             summary=(
-                f"A deterministic meal plan was prepared for the "
-                f"{request.profile.health_goal.value.replace('_', ' ')} goal."
+                f"Your plan is ready, with {goal_label} in mind."
             ),
             meal_plan=plan,
             bmi=bmi,

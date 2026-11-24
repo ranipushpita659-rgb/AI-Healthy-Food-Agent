@@ -4,15 +4,18 @@
 
 ```text
 Browser
-  ├─ app.js ── api.js ── POST /api/agent/recommend
-  │                         ├─ Pydantic request validation
-  │                         ├─ deterministic BMI/calorie/meal-plan services
-  │                         ├─ optional constrained LLM explanation
-  │                         └─ profile + plan repository ── SQLite
-  └─ water-reminder.js (page-local timer and counter)
+  ├─ index.html (landing page)
+  ├─ planner.html ── api.js ── GET /api/foods, POST /api/agent/recommend
+  ├─ plan.html (plan + nutrition, print-to-PDF)
+  └─ wellbeing.html ── water-reminder.js (page-local timer and counter)
+                            ├─ Pydantic request validation
+                            ├─ deterministic BMI/calorie/meal-plan services
+                            ├─ optional constrained LLM explanation
+                            └─ profile + plan repository ── SQLite
 ```
 
-The browser is served by FastAPI at `/`; CSS and JavaScript are served from
+FastAPI serves the landing, pantry, plan, and wellbeing pages at `/`,
+`/planner`, `/plan`, and `/wellbeing`; CSS and JavaScript are served from
 `/static`. The browser does not contain LLM credentials.
 
 ## Backend boundaries
