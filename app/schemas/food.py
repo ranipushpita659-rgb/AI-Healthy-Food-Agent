@@ -1,5 +1,7 @@
 """Schema for validated foods loaded from the structured JSON dataset."""
 
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator
 
 
@@ -20,6 +22,11 @@ class FoodItem(BaseModel):
     fibre_g: float = Field(ge=0)
     tags: list[str] = Field(default_factory=list)
     allergens: list[str] = Field(default_factory=list)
+    halal_status: Literal[
+        "ingredient_permissible",
+        "verified",
+        "unknown",
+    ] = "unknown"
     source_dataset: str = Field(min_length=1)
     source_url: HttpUrl
 

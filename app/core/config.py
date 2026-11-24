@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///./ai_healthy_food_agent.db"
     llm_api_key: str | None = None
     llm_model: str | None = None
+    llm_provider: str = "gemini"
     llm_base_url: str = "https://api.openai.com/v1"
     llm_timeout_seconds: float = 10
 

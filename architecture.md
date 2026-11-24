@@ -21,7 +21,7 @@ The browser is served by FastAPI at `/`; CSS and JavaScript are served from
 - `app/services/` owns deterministic calculations, meal selection, and the
   optional LLM explanation.
 - `app/data/food_repository.py` loads and validates the versioned JSON food
-  catalog.
+  catalog, including per-record USDA provenance and Halal status.
 - `app/data/database_repository.py` owns persistence operations.
 - `app/db/` defines SQLAlchemy models, the engine/session, and startup schema
   creation.
@@ -29,7 +29,8 @@ The browser is served by FastAPI at `/`; CSS and JavaScript are served from
 
 The agent service first calculates BMI/calorie estimates and generates a
 deterministic plan. It sends only a compact goal/preferences summary, calculated
-values, and selected dataset foods to the configured OpenAI-compatible provider.
+values, and selected dataset foods to Google Gemini through `google-genai`, or to
+an optional OpenAI-compatible provider.
 The LLM may explain those foods but cannot add or replace food IDs. Missing
 credentials, provider failures, and malformed or ungrounded output return the
 deterministic plan with an explicit fallback message.

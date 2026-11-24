@@ -146,7 +146,7 @@
             <fieldset class="available-foods" aria-describedby="available-food-help">
               <legend>Available Food Items</legend>
               <p id="available-food-help" class="available-food-help">
-                Select ingredients you have at home. Selected items constrain the plan; if none are selected, the full catalog can be used. The demo catalog has limited coverage.
+                Select ingredients you have at home. Selected items constrain the plan; if none are selected, the full catalog can be used. Choose enough options to cover breakfast, lunch, dinner, and snack.
               </p>
               <div class="available-food-groups">
                 <div class="available-food-category" role="group" aria-labelledby="available-grains">
@@ -200,13 +200,16 @@
               </div>
             </fieldset>
 
-            <fieldset class="choice-group">
+            <fieldset class="choice-group" aria-describedby="food-preference-help">
               <legend>Food preferences <span class="unit">(optional)</span></legend>
               <div class="choice-list">
                 <label class="choice"><input type="checkbox" name="food_preferences" value="vegetarian" /> Vegetarian</label>
                 <label class="choice"><input type="checkbox" name="food_preferences" value="vegan" /> Vegan</label>
                 <label class="choice"><input type="checkbox" name="food_preferences" value="halal" /> Halal</label>
               </div>
+              <p id="food-preference-help" class="available-food-help">
+                Halal filtering accepts ingredient-permissible foods and verified items. Meat without verified Halal status is excluded.
+              </p>
             </fieldset>
 
             <label class="field">

@@ -5,3 +5,5 @@ python-dotenv
 httpx
 pytest
 sqlalchemy
+alembic
+google-genai

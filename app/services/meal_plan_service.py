@@ -66,8 +66,14 @@ class NoMealCandidatesError(ValueError):
 
 
 def _food_matches_preferences(food: FoodItem, preferences: set[str]) -> bool:
-    """Require a dataset tag for every selected dietary preference."""
-    return preferences.issubset(set(food.tags))
+    """Require a supported dataset classification for each preference."""
+    tagged_preferences = preferences - {"halal"}
+    if not tagged_preferences.issubset(set(food.tags)):
+        return False
+    return "halal" not in preferences or food.halal_status in {
+        "ingredient_permissible",
+        "verified",
+    }
 
 
 def _food_is_excluded(food: FoodItem, exclusions: set[str]) -> bool:

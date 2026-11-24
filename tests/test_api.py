@@ -99,6 +99,7 @@ def test_food_endpoint_lists_and_filters_foods() -> None:
     assert {food["id"] for food in response.json()} == {
         "banana_raw",
         "apple_raw_skin",
+        "orange_raw",
     }
 
 
@@ -186,6 +187,7 @@ def test_meal_plan_endpoint_reports_missing_matching_foods() -> None:
                 "health_goal": "maintain_weight",
                 "food_preferences": ["halal"],
             },
+            "available_foods": ["chicken"],
         },
     )
 
@@ -196,6 +198,49 @@ def test_meal_plan_endpoint_reports_missing_matching_foods() -> None:
         "dinner",
         "snack",
     ]
+
+
+def test_meal_plan_endpoint_supports_non_rice_inventory_with_halal_filter() -> None:
+    response = request(
+        "POST",
+        "/api/meals/generate",
+        {
+            "daily_calorie_target": 2000,
+            "profile": {
+                "age": 30,
+                "gender": "female",
+                "height_cm": 165,
+                "weight_kg": 60,
+                "activity_level": "moderate",
+                "health_goal": "maintain_weight",
+                "food_preferences": ["halal"],
+            },
+            "available_foods": [
+                "bread",
+                "egg",
+                "tomato",
+                "milk",
+                "carrot",
+                "banana",
+                "apple",
+                "lentils",
+            ],
+        },
+    )
+
+    assert response.status_code == 200
+    result = response.json()
+    assert [meal["meal"] for meal in result["meals"]] == [
+        "breakfast",
+        "lunch",
+        "dinner",
+        "snack",
+    ]
+    assert all(
+        item["food_id"] != "brown_rice_cooked"
+        for meal in result["meals"]
+        for item in meal["items"]
+    )
 
 
 def test_meal_plan_endpoint_rejects_unusable_calorie_estimate() -> None:
