@@ -232,8 +232,9 @@ h1, h2, h3 { font-family: "Manrope", "Segoe UI", sans-serif; }
 .water-unit { color: var(--muted); font-size: 10px; }
 .water-track { height: 7px; overflow: hidden; margin-bottom: 17px; border-radius: 999px; background: #edf2ed; }
 .water-track span { display: block; width: 0; height: 100%; border-radius: inherit; background: #75ab84; transition: width 180ms ease; }
-.water-controls { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 8px; }
+.water-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: end; gap: 8px; }
 .water-controls .field { margin-bottom: 0; }
+.water-controls .form-actions { grid-column: 1 / -1; }
 .form-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .form-actions .button { min-height: 41px; padding: 9px 12px; font-size: 10px; }
 #water-status, #water-reminder-status { margin-top: 9px; }

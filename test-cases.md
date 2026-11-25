@@ -27,9 +27,12 @@ Manual UI checks:
    readable error and missing-slot details.
 5. Leave LLM credentials blank; verify the meal plan is still shown.
 6. Start, change, and pause a water reminder; use the one-minute option to
-   verify its live status while the page stays open. Reload and verify the
-   counter and timer reset.
+   verify its live status while the page stays open. Log different drink
+   amounts, reload to verify today's total persists, and undo the last entry.
+   Verify a different date shows a separate daily total.
 7. Narrow the browser window and verify the layout remains usable.
 
 Water reminders are browser timers, so inactive-tab throttling may delay them.
+The water log is stored in browser localStorage, so it remains on that browser
+and device but does not sync to other devices.
 The project has no authentication; use synthetic profiles in shared environments.

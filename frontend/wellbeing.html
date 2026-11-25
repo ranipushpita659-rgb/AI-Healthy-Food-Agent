@@ -21,16 +21,17 @@
       <section class="wellbeing-card">
         <div class="water-illustration" aria-hidden="true"><span>◡</span><i></i><i></i><i></i><b>✳</b></div>
         <div class="wellbeing-content">
-          <p class="eyebrow">YOUR WATER LOG</p><h2>A small check-in.</h2><p class="wellbeing-intro">Keep track of glasses during this visit, or set a gentle on-page reminder. There is no daily target.</p>
-          <div class="water-count"><span id="water-count" class="water-number">0</span><span class="water-unit">glasses logged</span></div>
-          <div id="water-progress" class="water-track" role="progressbar" aria-label="Water glasses logged" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0"><span></span></div>
+          <p class="eyebrow">YOUR WATER LOG</p><h2>A small check-in.</h2><p class="wellbeing-intro">Log drink amounts for today, or set a gentle on-page reminder. There is no daily target.</p>
+          <div class="water-count"><span id="water-count" class="water-number">0</span><span class="water-unit">ml logged today</span></div>
+          <div id="water-progress" class="water-track" aria-hidden="true"><span></span></div>
           <div class="water-controls">
+            <label class="field" for="water-amount"><span>Drink amount</span><select id="water-amount"><option value="150">150 ml</option><option value="250" selected>250 ml</option><option value="500">500 ml</option><option value="750">750 ml</option><option value="1000">1,000 ml</option></select></label>
             <label class="field" for="water-reminder-interval"><span>Remind me every</span><select id="water-reminder-interval"><option value="1">1 minute</option><option value="15">15 minutes</option><option value="30" selected>30 minutes</option></select></label>
-            <div class="form-actions"><button id="water-reminder-toggle" class="button button-outline" type="button">Start reminder</button><button id="water-button" class="button button-primary" type="button"><span aria-hidden="true">＋</span> Log a glass</button></div>
+            <div class="form-actions"><button id="water-reminder-toggle" class="button button-outline" type="button">Start reminder</button><button id="undo-water-button" class="button button-outline" type="button" disabled>Undo last</button><button id="water-button" class="button button-primary" type="button"><span aria-hidden="true">＋</span> Log amount</button></div>
           </div>
           <p id="water-status" class="form-status" role="status" aria-live="polite"></p>
           <p id="water-reminder-status" class="form-status" role="status" aria-live="polite"></p>
-          <p class="small-note">The counter and reminder run only while this page is open and reset when you leave.</p>
+          <p class="small-note">Your daily log is saved in this browser on this device. The reminder runs only while this page is open.</p>
         </div>
       </section>
     </main>
