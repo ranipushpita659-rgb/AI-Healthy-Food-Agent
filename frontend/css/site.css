@@ -16,7 +16,7 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { margin: 0; background: var(--background); color: var(--ink); font-size: 15px; line-height: 1.6; }
+body { margin: 0; background: var(--background); color: var(--ink); font-size: 16px; line-height: 1.6; }
 a { color: inherit; }
 button, input, select { font: inherit; }
 button, select { cursor: pointer; }
@@ -237,7 +237,33 @@ h1, h2, h3 { font-family: "Manrope", "Segoe UI", sans-serif; }
 .water-controls .form-actions { grid-column: 1 / -1; }
 .form-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .form-actions .button { min-height: 41px; padding: 9px 12px; font-size: 10px; }
-#water-status, #water-reminder-status { margin-top: 9px; }
+#water-status { margin-top: 9px; }
+
+.main-nav a { font-size: 14px; }
+.button { font-size: 14px; }
+.button-small { font-size: 13px; }
+.eyebrow { font-size: 11px; }
+.hero-description { font-size: 16px; }
+.hero-proof, .form-status, .notice { font-size: 12px; }
+.floating-note strong { font-size: 12px; }
+.floating-note small, .visual-caption, .small-note, .nutrition-disclaimer { font-size: 10px; }
+.value-item h2 { font-size: 14px; }
+.value-item p, .step-card p, .aside-note, .site-footer { font-size: 11px; }
+.section-heading > p:last-child, .page-intro > div:first-child > p:last-child { font-size: 14px; }
+.step-card h3 { font-size: 13px; }
+.progress-label { font-size: 11px; }
+.section-number { font-size: 11px; }
+.card-heading p, .field, .choice-group legend, .food-option, .meal-components li { font-size: 12px; }
+.field small, .choice-group legend small, .food-option small, .aside-tags span { font-size: 10px; }
+.field input, .field select { font-size: 13px; }
+.food-chip, .helper-text, .pantry-empty, .choice, .form-actions .button,
+.meal-serving, .meal-nutrition, .nutrition-intro, .plan-footer p { font-size: 12px; }
+.aside-card p { font-size: 12px; }
+.meal-type, .meal-components .meal-reason, .nutrition-metric dt { font-size: 10px; }
+.calorie-highlight span, .calorie-range span, .plan-assumptions { font-size: 11px; }
+.calorie-range strong { font-size: 12px; }
+.wellbeing-intro { font-size: 12px; }
+.water-unit { font-size: 11px; }
 
 @media (max-width: 900px) {
   .hero { min-height: 500px; gap: 24px; }
@@ -253,7 +279,7 @@ h1, h2, h3 { font-family: "Manrope", "Segoe UI", sans-serif; }
   .page-width { width: min(100% - 36px, 580px); }
   .site-header { min-height: 68px; flex-wrap: wrap; gap: 10px; padding: 11px 20px; }
   .main-nav { order: 3; width: 100%; justify-content: space-between; gap: 12px; padding-top: 8px; border-top: 1px solid var(--line); }
-  .main-nav a { font-size: 11px; }
+  .main-nav a { font-size: 12px; }
   .main-nav a.active::after { bottom: -9px; }
   .header-action { margin-left: auto; }
   .hero { min-height: auto; grid-template-columns: 1fr; gap: 25px; padding-top: 42px; }
@@ -292,12 +318,12 @@ h1, h2, h3 { font-family: "Manrope", "Segoe UI", sans-serif; }
   .brand { font-size: 14px; }
   .header-action { padding-inline: 10px; }
   .hero-actions { align-items: flex-start; flex-direction: column; gap: 14px; }
-  .hero-proof { gap: 8px; font-size: 9px; }
+  .hero-proof { gap: 8px; font-size: 11px; }
   .hero-visual { min-height: 300px; }
   .food-bowl { width: 200px; height: 200px; }
   .floating-note { gap: 7px; padding: 8px 10px; }
-  .floating-note strong { font-size: 9px; }
-  .floating-note small { font-size: 8px; }
+  .floating-note strong { font-size: 11px; }
+  .floating-note small { font-size: 10px; }
   .note-top { top: 17px; }
   .note-bottom { bottom: 21px; }
   .form-grid { grid-template-columns: 1fr; }

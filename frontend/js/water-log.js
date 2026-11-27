@@ -4,16 +4,12 @@ const waterProgress = document.querySelector("#water-progress");
 const waterStatus = document.querySelector("#water-status");
 const waterAmount = document.querySelector("#water-amount");
 const undoWaterButton = document.querySelector("#undo-water-button");
-const reminderStatus = document.querySelector("#water-reminder-status");
-const reminderInterval = document.querySelector("#water-reminder-interval");
-const reminderToggle = document.querySelector("#water-reminder-toggle");
 
 const storageKeyPrefix = "bhojon-water-log-";
 const progressScaleMl = 2000;
 let currentDateKey = getLocalDateKey(new Date());
 let loggedWaterEntries = [];
 let storageAvailable = true;
-let reminderTimer = null;
 
 function getLocalDateKey(date) {
   const year = date.getFullYear();
@@ -102,14 +98,6 @@ function saveWaterEntries(entries, successMessage) {
   return true;
 }
 
-function stopReminder() {
-  if (reminderTimer !== null) {
-    window.clearInterval(reminderTimer);
-    reminderTimer = null;
-  }
-  reminderToggle.textContent = "Start reminder";
-}
-
 try {
   loggedWaterEntries = loadWaterEntries(currentDateKey);
 } catch (error) {
@@ -151,34 +139,4 @@ undoWaterButton.addEventListener("click", () => {
   saveWaterEntries(entries, `Undid the last ${removedEntry.amountMl} ml entry.`);
 });
 
-reminderToggle.addEventListener("click", () => {
-  if (reminderTimer !== null) {
-    stopReminder();
-    reminderStatus.textContent = "Reminder paused.";
-    return;
-  }
-
-  const intervalMinutes = Number(reminderInterval.value);
-  if (!Number.isFinite(intervalMinutes) || intervalMinutes <= 0) {
-    reminderStatus.textContent = "Choose a valid reminder interval.";
-    return;
-  }
-
-  reminderTimer = window.setInterval(() => {
-    reminderStatus.textContent =
-      "Water reminder: take a break if you would like one.";
-  }, intervalMinutes * 60 * 1000);
-  reminderToggle.textContent = "Pause reminder";
-  reminderStatus.textContent =
-    `Reminder set for every ${intervalMinutes} minute(s) while this page is open.`;
-});
-
-reminderInterval.addEventListener("change", () => {
-  if (reminderTimer !== null) {
-    stopReminder();
-    reminderToggle.click();
-  }
-});
-
 window.addEventListener("focus", refreshWaterLogForToday);
-window.addEventListener("pagehide", stopReminder);

@@ -7,8 +7,7 @@ Browser
   ├─ index.html (landing page)
   ├─ planner.html ── api.js ── GET /api/foods, POST /api/agent/recommend
   ├─ plan.html (plan + nutrition, print-to-PDF)
-  └─ wellbeing.html ── water-reminder.js ── browser localStorage (daily water log)
-                            └─ page-local reminder timer
+  └─ wellbeing.html ── water-log.js ── browser localStorage (daily water log)
                             ├─ Pydantic request validation
                             ├─ deterministic BMI/calorie/meal-plan services
                             ├─ optional constrained LLM explanation

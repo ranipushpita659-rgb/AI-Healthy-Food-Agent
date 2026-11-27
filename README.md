@@ -83,12 +83,10 @@ FastAPI-served `/api` and `/static` paths.
    The plan and profile are saved locally.
 4. Select **Download PDF** and choose **Save as PDF** in your browser's print
    dialog to keep a clean copy of the plan.
-5. Use **Wellbeing** to log drink amounts for today and optionally set an
-   on-page water reminder.
+5. Use **Wellbeing** to log drink amounts for today.
 
 The daily water log is saved in this browser on this device and remains after
-the page is reloaded. Browser background-tab throttling may delay reminders;
-they do not run after the page is closed.
+the page is reloaded.
 
 ## Tests
 
@@ -174,7 +172,5 @@ intentionally non-destructive and does not remove application tables or records.
   when the Halal preference is selected.
 - The LLM is limited to explaining foods already selected by the deterministic
   planner. It does not calculate authoritative nutrition values.
-- The reminder is an in-page timer and is not a background notification or
-  medical hydration target.
 - The API has no user authentication or authorization. Add appropriate access
   controls before exposing it beyond a trusted local environment.

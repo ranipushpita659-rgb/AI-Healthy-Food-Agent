@@ -101,6 +101,21 @@ function renderFoodOptions() {
   });
 }
 
+function resetPantryForNewVisit() {
+  selectedFoodIds.clear();
+  starterFoodIds.forEach((foodId) => selectedFoodIds.add(foodId));
+  customFoods.clear();
+  foodSearch.value = "";
+  customFoodName.value = "";
+  customFoodStatus.textContent = "";
+  customFoodStatus.className = "form-status";
+  pickerStatus.textContent = "";
+  pickerStatus.className = "form-status";
+  if (foodPicker.open) foodPicker.close();
+  renderSelectedFoods();
+  renderFoodOptions();
+}
+
 function makeProfile(formData) {
   return {
     age: Number(formData.get("age")),
@@ -216,6 +231,7 @@ profileForm.addEventListener("submit", async (event) => {
 async function loadFoodCatalog() {
   try {
     const foods = await window.apiClient.get("/api/foods");
+    foodsById.clear();
     foods.forEach((food) => foodsById.set(food.id, food));
     starterFoodIds.forEach((foodId) => {
       if (!foodsById.has(foodId)) selectedFoodIds.delete(foodId);
@@ -232,5 +248,13 @@ async function loadFoodCatalog() {
     document.querySelector("#submit-profile").disabled = true;
   }
 }
+
+window.addEventListener("pageshow", (event) => {
+  if (!event.persisted) return;
+  resetPantryForNewVisit();
+  profileStatus.textContent = "";
+  profileStatus.className = "form-status";
+  loadFoodCatalog();
+});
 
 loadFoodCatalog();

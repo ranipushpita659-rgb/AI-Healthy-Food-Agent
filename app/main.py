@@ -57,5 +57,5 @@ def get_plan_page() -> FileResponse:
 
 @app.get("/wellbeing", include_in_schema=False)
 def get_wellbeing_page() -> FileResponse:
-    """Serve the optional hydration reminder."""
+    """Serve the hydration log."""
     return FileResponse(FRONTEND_DIR / "wellbeing.html")
