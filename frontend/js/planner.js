@@ -10,19 +10,8 @@ const customFoodForm = document.querySelector("#custom-food-form");
 const customFoodName = document.querySelector("#custom-food-name");
 const customFoodStatus = document.querySelector("#custom-food-status");
 
-const starterFoodIds = [
-  "white_rice_cooked",
-  "lentils_cooked",
-  "tilapia_cooked",
-  "chicken_breast_roasted",
-  "eggplant_cooked",
-  "papaya_raw",
-  "egg_whole_boiled",
-  "banana_raw",
-  "spinach_raw",
-];
 const foodsById = new Map();
-const selectedFoodIds = new Set(starterFoodIds);
+const selectedFoodIds = new Set();
 const customFoods = new Map();
 
 function createTextElement(tagName, className, text) {
@@ -103,7 +92,6 @@ function renderFoodOptions() {
 
 function resetPantryForNewVisit() {
   selectedFoodIds.clear();
-  starterFoodIds.forEach((foodId) => selectedFoodIds.add(foodId));
   customFoods.clear();
   foodSearch.value = "";
   customFoodName.value = "";
@@ -233,9 +221,6 @@ async function loadFoodCatalog() {
     const foods = await window.apiClient.get("/api/foods");
     foodsById.clear();
     foods.forEach((food) => foodsById.set(food.id, food));
-    starterFoodIds.forEach((foodId) => {
-      if (!foodsById.has(foodId)) selectedFoodIds.delete(foodId);
-    });
     renderSelectedFoods();
     renderFoodOptions();
   } catch (error) {
